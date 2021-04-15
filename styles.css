@@ -1,0 +1,59 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.main {
+  width: 800px;
+  height: 800px;
+  margin: auto;
+  background-color: lightgray;
+}
+
+.main {
+  width: 800px;
+  height: 800px;
+  margin: auto;
+  background-color: lightgray;
+  animation-name: example;
+  animation-duration: 4s;
+}
+
+/* @keyframes example {
+  from {background-color: lightgray;}
+  to {background-color: yellow;}
+} */
+
+#player {
+  position: absolute;
+  /* left: 45%;
+  top: 50%; */
+}
+
+/* .dash-forward {
+  animation-name: attackForward;
+  animation-duration: 1s;
+}
+
+.dash-back {
+  animation-name: attackBack;
+  animation-duration: 1s;
+}
+
+@keyframes attackForward {
+  from {
+    left: 45%;
+  }
+  to {
+    left: 55%;
+  }
+}
+@keyframes attackBack {
+  from {
+    left: 55%;
+  }
+  to {
+    left: 45%;
+  }
+} */
