@@ -1,84 +1,103 @@
 const mainContainer = document.querySelector('.main');
-const player = document.getElementById('player');
+const playerModel = document.getElementById('player');
 const attackButton = document.getElementById('attack');
 const defendButton = document.getElementById('defend');
 const evadeButton = document.getElementById('evade');
 const moveSpeed = 30;
 const moveDuration = 500;
 
-player.style.left = '45%';
-player.style.top = '75%';
 
-const attack = function () {
-  player.src = 'player-assets/images/P4.png';
+const Character = function (name, health, attackPower, defense, model, poses, voiceSet) {
+  this.name = name;
+  this.health = health;
+  this.attackPower = attackPower;
+  this.defense = defense;
+  this.moveFrom = 'left';
+  this.characterModel = model;
+  this.poses = poses;
+  this.voiceSet = voiceSet;
+}
 
-  const moveForward = setInterval(function () {
-    const leftVal = parseInt(player.style.left, 10);
-    player.style.left = (leftVal + 1) + "%";
-  }, moveSpeed);
+const createCharacterMethods = function () {
+  Character.prototype.attack = function () {
+    const characterToMove = player;
+    characterToMove.characterModel.src = 'player-assets/images/P4.png';
+    const moveForward = setInterval(function () {
+      const basePosition = parseInt(player.characterModel.style[characterToMove.moveFrom], 10);
+      player.characterModel.style[characterToMove.moveFrom] = (basePosition + 10) + "px";
+    }, moveSpeed);
 
-  setTimeout(function () {
-    player.src = 'player-assets/images/P6.png';
-  }, moveDuration / 3);
+    setTimeout(function () {
+      characterToMove.characterModel.src = 'player-assets/images/P6.png';
+    }, moveDuration / 3);
 
-  setTimeout(function () {
-    player.src = 'player-assets/images/P1.png';
-    clearInterval(moveForward);
+    setTimeout(function () {
+      characterToMove.characterModel.src = 'player-assets/images/P1.png';
+      clearInterval(moveForward);
+
+      const moveBack = setInterval(function () {
+        const movedToPosition = parseInt(playerModel.style[characterToMove.moveFrom], 10);
+        playerModel.style[characterToMove.moveFrom] = (movedToPosition - 10) + "px";
+      }, moveSpeed);
+
+      setTimeout(function () {
+        clearInterval(moveBack);
+      }, moveDuration)
+    }, moveDuration)
+  }
+
+  Character.prototype.defend = function () {
+    const characterToMove = player;
+    characterToMove.characterModel.src = 'player-assets/images/P2.png';
+
+    setTimeout(function () {
+      characterToMove.characterModel.src = 'player-assets/images/P1.png';
+    }, moveDuration)
+  }
+
+  Character.prototype.evade = function () {
+    const characterToMove = player;
 
     const moveBack = setInterval(function () {
-      const leftPos = parseInt(player.style.left, 10);
-      player.style.left = (leftPos - 1) + "%";
+      const characterToMove = player;
+      const basePosition = parseInt(player.characterModel.style[characterToMove.moveFrom], 10);
+      player.characterModel.style[characterToMove.moveFrom] = (basePosition - 10) + "px";
     }, moveSpeed);
-
     setTimeout(function () {
       clearInterval(moveBack);
+      const moveForward = setInterval(function () {
+        const movedToPosition = parseInt(player.characterModel.style[characterToMove.moveFrom], 10);
+        player.characterModel.style[characterToMove.moveFrom] = (movedToPosition + 10) + "px";
+      }, moveSpeed);
+      setTimeout(function () {
+        clearInterval(moveForward);
+      }, moveDuration)
     }, moveDuration)
-  }, moveDuration)
-}
-
-const defend = function () {
-  player.src = 'player-assets/images/P2.png';
-
-  setTimeout(function(){
-    player.src = 'player-assets/images/P1.png';
-  }, moveDuration)
-}
-
-const evade = function () {
-  const moveBack = setInterval(function () {
-    const leftPos = parseInt(player.style.left, 10);
-    player.style.left = (leftPos - 1) + "%";
-  }, moveSpeed);
-  setTimeout(function () {
-    clearInterval(moveBack);
-    const moveForward = setInterval(function () {
-      const leftVal = parseInt(player.style.left, 10);
-      player.style.left = (leftVal + 1) + "%";
-    }, moveSpeed);
-    setTimeout(function () {
-      clearInterval(moveForward);
-    }, moveDuration)
-  }, moveDuration)
+  }
 }
 
 
 const determineClickResult = function (target) {
   if (target === attackButton) {
-    attack();
+    player.attack();
   }
 
   if (target === defendButton) {
-    defend();
+    player.defend();
   }
 
   if (target === evadeButton) {
-    evade();
+    player.evade();
   }
 }
 
 mainContainer.addEventListener('click', function (event) {
+
   const target = event.target;
   determineClickResult(target);
 })
 
-
+createCharacterMethods();
+const player = new Character('Player', 50, 10, 5, playerModel, [], []);
+playerModel.style.left = '400px';
+playerModel.style.top = '400px';
