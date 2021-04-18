@@ -30,25 +30,37 @@ const createCharacterMethods = function () {
     }
   }
 
-  Character.prototype.attack = function (character) {
-    const characterToMove = player;
-    character.changeStance(character, 'ready');
-    const moveForward = setInterval(function () {
-      const basePosition = parseInt(player.characterModel.style[characterToMove.moveFrom], 10);
-      player.characterModel.style[characterToMove.moveFrom] = (basePosition + 10) + "px";
-    }, moveSpeed);
+  Character.prototype.moveForward = function (character) {
+    const startPosition = parseInt(player.characterModel.style[character.moveFrom], 10);
+    character.characterModel.style[character.moveFrom] = (startPosition + 10) + "px";
+  }
 
+  Character.prototype.commenceAttack = function (character) {
     setTimeout(function () {
       character.changeStance(character, 'attack');
     }, moveDuration / 3);
+  }
+
+  Character.prototype.moveBack = function (character) {
+    const startPosition = parseInt(playerModel.style[character.moveFrom], 10);
+    playerModel.style[character.moveFrom] = (startPosition - 10) + "px";
+  }
+
+  Character.prototype.attack = function (character) {
+    character.changeStance(character, 'ready');
+
+    const moveForward = setInterval(function () {
+      character.moveForward(character);
+    }, moveSpeed);
+
+    character.commenceAttack(character);
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
       clearInterval(moveForward);
 
       const moveBack = setInterval(function () {
-        const movedToPosition = parseInt(playerModel.style[characterToMove.moveFrom], 10);
-        playerModel.style[characterToMove.moveFrom] = (movedToPosition - 10) + "px";
+        character.moveBack(character);
       }, moveSpeed);
 
       setTimeout(function () {
