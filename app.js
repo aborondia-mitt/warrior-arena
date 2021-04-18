@@ -4,6 +4,9 @@ const enemyModel = document.getElementById('enemy');
 const attackButton = document.getElementById('attack');
 const defendButton = document.getElementById('defend');
 const evadeButton = document.getElementById('evade');
+const flinchButton = document.getElementById('flinch');
+const victoryButton = document.getElementById('victory');
+const fallButton = document.getElementById('fall');
 const moveSpeed = 30;
 const moveDuration = 500;
 
@@ -96,6 +99,28 @@ const createCharacterMethods = function () {
     }, moveDuration)
   }
 
+  Player.prototype.flinch = function (character) {
+    character.changeStance(character, 'flinch');
+
+    setTimeout(function () {
+      character.changeStance(character, 'idle');
+    }, moveDuration)  }
+
+  Player.prototype.victory = function (character) {
+    character.changeStance(character, 'victory');
+
+    setTimeout(function () {
+      character.changeStance(character, 'idle');
+    }, moveDuration)  }
+
+  Player.prototype.fall = function (character) {
+    character.changeStance(character, 'fall');
+
+    setTimeout(function () {
+      character.changeStance(character, 'idle');
+    }, moveDuration)
+  }
+
   Player.prototype.evade = function (character) {
     const moveBack = setInterval(function () {
       character.moveBack(character);
@@ -124,7 +149,7 @@ const populateCharacterPoses = function (character) {
       case 5: return 'defend';
       case 6: return 'flinch';
       case 7: return 'victory';
-      case 8: return 'fallen';
+      case 8: return 'fall';
     }
   }
 
@@ -155,6 +180,18 @@ const determineClickResult = function (target) {
 
   if (target === evadeButton) {
     player.evade(player);
+  }
+
+  if (target === flinchButton) {
+    player.flinch(player);
+  }
+
+  if (target === victoryButton) {
+    player.victory(player);
+  }
+
+  if (target === fallButton) {
+    player.fall(player);
   }
 }
 
