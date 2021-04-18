@@ -31,7 +31,7 @@ const createCharacterMethods = function () {
   }
 
   Character.prototype.moveForward = function (character) {
-    const startPosition = parseInt(player.characterModel.style[character.moveFrom], 10);
+    const startPosition = parseInt(character.characterModel.style[character.moveFrom], 10);
     character.characterModel.style[character.moveFrom] = (startPosition + 10) + "px";
   }
 
@@ -42,8 +42,8 @@ const createCharacterMethods = function () {
   }
 
   Character.prototype.moveBack = function (character) {
-    const startPosition = parseInt(playerModel.style[character.moveFrom], 10);
-    playerModel.style[character.moveFrom] = (startPosition - 10) + "px";
+    const startPosition = parseInt(character.characterModel.style[character.moveFrom], 10);
+    character.characterModel.style[character.moveFrom] = (startPosition - 10) + "px";
   }
 
   Character.prototype.attack = function (character) {
@@ -70,28 +70,24 @@ const createCharacterMethods = function () {
   }
 
   Character.prototype.defend = function (character) {
-    const characterToMove = player;
-    characterToMove.characterModel.src = 'player-assets/images/P2.png';
+    character.changeStance(character, 'defend');
 
     setTimeout(function () {
-      characterToMove.characterModel.src = 'player-assets/images/P1.png';
+      character.changeStance(character, 'idle');
     }, moveDuration)
   }
 
   Character.prototype.evade = function (character) {
-    const characterToMove = player;
-
     const moveBack = setInterval(function () {
-      const characterToMove = player;
-      const basePosition = parseInt(player.characterModel.style[characterToMove.moveFrom], 10);
-      player.characterModel.style[characterToMove.moveFrom] = (basePosition - 10) + "px";
+      character.moveBack(character);
     }, moveSpeed);
+
     setTimeout(function () {
       clearInterval(moveBack);
       const moveForward = setInterval(function () {
-        const movedToPosition = parseInt(player.characterModel.style[characterToMove.moveFrom], 10);
-        player.characterModel.style[characterToMove.moveFrom] = (movedToPosition + 10) + "px";
+        character.moveForward(character);
       }, moveSpeed);
+      
       setTimeout(function () {
         clearInterval(moveForward);
       }, moveDuration)
@@ -119,7 +115,6 @@ const populateCharacterPoses = function (character) {
   }
   return models;
 }
-
 
 const determineClickResult = function (target) {
   if (target === attackButton) {
