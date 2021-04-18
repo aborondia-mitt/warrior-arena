@@ -21,7 +21,7 @@ const Player = function (name, health, attackPower, defense, model, poses, voice
   this.voiceSet = voiceSet;
   this.startingX = '400px';
   this.startingY = '100px';
-  this.moveFrom = 'left';
+  this.xMoveFactor = 10;
 }
 
 const Enemy = function (name, health, attackPower, defense, model, poses, voiceSet) {
@@ -35,7 +35,7 @@ const Enemy = function (name, health, attackPower, defense, model, poses, voiceS
   this.voiceSet = voiceSet;
   this.startingX = '1000px';
   this.startingY = '100px';
-  this.moveFrom = 'right';
+  this.xMoveFactor = -10;
 }
 
 Enemy.prototype = Object.create(Player.prototype);
@@ -53,8 +53,8 @@ const createCharacterMethods = function () {
   }
 
   Player.prototype.moveForward = function (character) {
-    const startPosition = parseInt(character.characterModel.style[character.moveFrom], 10);
-    character.characterModel.style[character.moveFrom] = (startPosition + 10) + "px";
+    const startPosition = parseInt(character.characterModel.style.left, 10);
+    character.characterModel.style.left = (startPosition + character.xMoveFactor) + "px";
   }
 
   Player.prototype.commenceAttack = function (character) {
@@ -64,8 +64,8 @@ const createCharacterMethods = function () {
   }
 
   Player.prototype.moveBack = function (character) {
-    const startPosition = parseInt(character.characterModel.style[character.moveFrom], 10);
-    character.characterModel.style[character.moveFrom] = (startPosition - 10) + "px";
+    const startPosition = parseInt(character.characterModel.style.left, 10);
+    character.characterModel.style.left = (startPosition - character.xMoveFactor) + "px";
   }
 
   Player.prototype.attack = function (character) {
@@ -171,27 +171,27 @@ const addCharactersToScreen = function () {
 
 const determineClickResult = function (target) {
   if (target === attackButton) {
-    player.attack(player);
+    player.attack(enemy);
   }
 
   if (target === defendButton) {
-    player.defend(player);
+    player.defend(enemy);
   }
 
   if (target === evadeButton) {
-    player.evade(player);
+    player.evade(enemy);
   }
 
   if (target === flinchButton) {
-    player.flinch(player);
+    player.flinch(enemy);
   }
 
   if (target === victoryButton) {
-    player.victory(player);
+    player.victory(enemy);
   }
 
   if (target === fallButton) {
-    player.fall(player);
+    player.fall(enemy);
   }
 }
 
