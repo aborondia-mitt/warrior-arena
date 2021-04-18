@@ -1,5 +1,6 @@
 const mainContainer = document.querySelector('.main');
 const playerModel = document.getElementById('player');
+const enemyModel = document.getElementById('enemy');
 const attackButton = document.getElementById('attack');
 const defendButton = document.getElementById('defend');
 const evadeButton = document.getElementById('evade');
@@ -7,20 +8,38 @@ const moveSpeed = 30;
 const moveDuration = 500;
 
 
-const Character = function (name, health, attackPower, defense, model, poses, voiceSet) {
+const Player = function (name, health, attackPower, defense, model, poses, voiceSet) {
   this.name = name;
   this.health = health;
   this.attackPower = attackPower;
   this.defense = defense;
-  this.moveFrom = 'left';
   this.characterModel = model;
   this.poses = poses;
   this.voiceSet = voiceSet;
-  this.isPlayer = true;
+  this.startingX = '400px';
+  this.startingY = '100px';
+  this.moveFrom = 'left';
 }
 
+const Enemy = function (name, health, attackPower, defense, model, poses, voiceSet) {
+  Player.call(this);
+  this.name = name;
+  this.health = health;
+  this.attackPower = attackPower;
+  this.defense = defense;
+  this.characterModel = model;
+  this.poses = poses;
+  this.voiceSet = voiceSet;
+  this.startingX = '1000px';
+  this.startingY = '100px';
+  this.moveFrom = 'right';
+}
+
+Enemy.prototype = Object.create(Player.prototype);
+Enemy.prototype.constructor = Enemy;
+
 const createCharacterMethods = function () {
-  Character.prototype.changeStance = function (character, stance) {
+  Player.prototype.changeStance = function (character, stance) {
     // 1: Idle; 2: Ready; 3: Attack; 4: Special;
     // 5: Defend; 6: Flinch;  7: Victory; 8: Fallen;
     for (i = 0; i < character.poses.length; i++) {
@@ -30,23 +49,23 @@ const createCharacterMethods = function () {
     }
   }
 
-  Character.prototype.moveForward = function (character) {
+  Player.prototype.moveForward = function (character) {
     const startPosition = parseInt(character.characterModel.style[character.moveFrom], 10);
     character.characterModel.style[character.moveFrom] = (startPosition + 10) + "px";
   }
 
-  Character.prototype.commenceAttack = function (character) {
+  Player.prototype.commenceAttack = function (character) {
     setTimeout(function () {
       character.changeStance(character, 'attack');
     }, moveDuration / 3);
   }
 
-  Character.prototype.moveBack = function (character) {
+  Player.prototype.moveBack = function (character) {
     const startPosition = parseInt(character.characterModel.style[character.moveFrom], 10);
     character.characterModel.style[character.moveFrom] = (startPosition - 10) + "px";
   }
 
-  Character.prototype.attack = function (character) {
+  Player.prototype.attack = function (character) {
     character.changeStance(character, 'ready');
 
     const moveForward = setInterval(function () {
@@ -69,7 +88,7 @@ const createCharacterMethods = function () {
     }, moveDuration)
   }
 
-  Character.prototype.defend = function (character) {
+  Player.prototype.defend = function (character) {
     character.changeStance(character, 'defend');
 
     setTimeout(function () {
@@ -77,7 +96,7 @@ const createCharacterMethods = function () {
     }, moveDuration)
   }
 
-  Character.prototype.evade = function (character) {
+  Player.prototype.evade = function (character) {
     const moveBack = setInterval(function () {
       character.moveBack(character);
     }, moveSpeed);
@@ -87,7 +106,7 @@ const createCharacterMethods = function () {
       const moveForward = setInterval(function () {
         character.moveForward(character);
       }, moveSpeed);
-      
+
       setTimeout(function () {
         clearInterval(moveForward);
       }, moveDuration)
@@ -116,6 +135,15 @@ const populateCharacterPoses = function (character) {
   return models;
 }
 
+const addCharactersToScreen = function () {
+  player.changeStance(player, 'idle');
+  enemy.changeStance(enemy, 'idle');
+  player.characterModel.style.left = player.startingX;
+  player.characterModel.style.bottom = player.startingY;
+  enemy.characterModel.style.left = enemy.startingX;
+  enemy.characterModel.style.bottom = enemy.startingY;
+}
+
 const determineClickResult = function (target) {
   if (target === attackButton) {
     player.attack(player);
@@ -136,6 +164,6 @@ mainContainer.addEventListener('click', function (event) {
 })
 
 createCharacterMethods();
-const player = new Character('player', 50, 10, 5, playerModel, populateCharacterPoses('player'), []);
-playerModel.style.left = '400px';
-playerModel.style.top = '400px';
+const player = new Player('player', 50, 10, 5, playerModel, populateCharacterPoses('player'), []);
+const enemy = new Enemy('enemy', 50, 10, 5, enemyModel, populateCharacterPoses('enemy1'), []);
+addCharactersToScreen();

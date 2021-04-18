@@ -31,6 +31,12 @@ body {
   top: 50%; */
 }
 
+#enemy {
+  position: absolute;
+  /* left: 45%;
+  top: 50%; */
+}
+
 /* .dash-forward {
   animation-name: attackForward;
   animation-duration: 1s;
