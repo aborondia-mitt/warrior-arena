@@ -16,23 +16,34 @@ const Character = function (name, health, attackPower, defense, model, poses, vo
   this.characterModel = model;
   this.poses = poses;
   this.voiceSet = voiceSet;
+  this.isPlayer = true;
 }
 
 const createCharacterMethods = function () {
-  Character.prototype.attack = function () {
+  Character.prototype.changeStance = function (character, stance) {
+    // 1: Idle; 2: Ready; 3: Attack; 4: Special;
+    // 5: Defend; 6: Flinch;  7: Victory; 8: Fallen;
+    for (i = 0; i < character.poses.length; i++) {
+      if (character.poses[i][0] === stance) {
+        character.characterModel.src = character.poses[i][1];
+      }
+    }
+  }
+
+  Character.prototype.attack = function (character) {
     const characterToMove = player;
-    characterToMove.characterModel.src = 'player-assets/images/P4.png';
+    character.changeStance(character, 'ready');
     const moveForward = setInterval(function () {
       const basePosition = parseInt(player.characterModel.style[characterToMove.moveFrom], 10);
       player.characterModel.style[characterToMove.moveFrom] = (basePosition + 10) + "px";
     }, moveSpeed);
 
     setTimeout(function () {
-      characterToMove.characterModel.src = 'player-assets/images/P6.png';
+      character.changeStance(character, 'attack');
     }, moveDuration / 3);
 
     setTimeout(function () {
-      characterToMove.characterModel.src = 'player-assets/images/P1.png';
+      character.changeStance(character, 'idle');
       clearInterval(moveForward);
 
       const moveBack = setInterval(function () {
@@ -46,7 +57,7 @@ const createCharacterMethods = function () {
     }, moveDuration)
   }
 
-  Character.prototype.defend = function () {
+  Character.prototype.defend = function (character) {
     const characterToMove = player;
     characterToMove.characterModel.src = 'player-assets/images/P2.png';
 
@@ -55,7 +66,7 @@ const createCharacterMethods = function () {
     }, moveDuration)
   }
 
-  Character.prototype.evade = function () {
+  Character.prototype.evade = function (character) {
     const characterToMove = player;
 
     const moveBack = setInterval(function () {
@@ -76,28 +87,48 @@ const createCharacterMethods = function () {
   }
 }
 
+const populateCharacterPoses = function (character) {
+  const namePose = function (i) {
+    switch (i) {
+      case 1: return 'idle';
+      case 2: return 'ready';
+      case 3: return 'attack';
+      case 4: return 'special';
+      case 5: return 'defend';
+      case 6: return 'flinch';
+      case 7: return 'victory';
+      case 8: return 'fallen';
+    }
+  }
+
+  const models = []
+  for (i = 1; i <= 8; i++) {
+    models.push([namePose(i), `${character}-assets/images/${i}.png`])
+  }
+  return models;
+}
+
 
 const determineClickResult = function (target) {
   if (target === attackButton) {
-    player.attack();
+    player.attack(player);
   }
 
   if (target === defendButton) {
-    player.defend();
+    player.defend(player);
   }
 
   if (target === evadeButton) {
-    player.evade();
+    player.evade(player);
   }
 }
 
 mainContainer.addEventListener('click', function (event) {
-
   const target = event.target;
   determineClickResult(target);
 })
 
 createCharacterMethods();
-const player = new Character('Player', 50, 10, 5, playerModel, [], []);
+const player = new Character('player', 50, 10, 5, playerModel, populateCharacterPoses('player'), []);
 playerModel.style.left = '400px';
 playerModel.style.top = '400px';
