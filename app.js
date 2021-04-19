@@ -1,14 +1,16 @@
-const mainContainer = document.querySelector('.main');
-const playerModel = document.getElementById('player');
-const enemyModel = document.getElementById('enemy');
-const attackButton = document.getElementById('attack');
-const defendButton = document.getElementById('defend');
-const evadeButton = document.getElementById('evade');
-const flinchButton = document.getElementById('flinch');
-const victoryButton = document.getElementById('victory');
-const fallButton = document.getElementById('fall');
-const moveSpeed = 30;
-const moveDuration = 500;
+const gameData = {
+  mainContainer: document.querySelector('.main'),
+  playerModel: document.getElementById('player'),
+  enemyModel: document.getElementById('enemy'),
+  attackButton: document.getElementById('attack'),
+  defendButton: document.getElementById('defend'),
+  evadeButton: document.getElementById('evade'),
+  flinchButton: document.getElementById('flinch'),
+  victoryButton: document.getElementById('victory'),
+  fallButton: document.getElementById('fall'),
+  moveSpeed: 30,
+  moveDuration: 500,
+}
 
 
 const Player = function (name, health, attackPower, defense, model, poses, voiceSet) {
@@ -58,7 +60,7 @@ const playerMethods = [
   Player.prototype.commenceAttack = function (character) {
     setTimeout(function () {
       character.changeStance(character, 'attack');
-    }, moveDuration / 3);
+    }, gameData.moveDuration / 3);
   },
   Player.prototype.moveBack = function (character) {
     const startPosition = parseInt(character.characterModel.style.left, 10);
@@ -69,7 +71,7 @@ const playerMethods = [
 
     const moveForward = setInterval(function () {
       character.moveForward(character);
-    }, moveSpeed);
+    }, gameData.moveSpeed);
 
     character.commenceAttack(character);
 
@@ -79,19 +81,19 @@ const playerMethods = [
 
       const moveBack = setInterval(function () {
         character.moveBack(character);
-      }, moveSpeed);
+      }, gameData.moveSpeed);
 
       setTimeout(function () {
         clearInterval(moveBack);
-      }, moveDuration)
-    }, moveDuration)
+      }, gameData.moveDuration)
+    }, gameData.moveDuration)
   },
   Player.prototype.defend = function (character) {
     character.changeStance(character, 'defend');
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
-    }, moveDuration)
+    }, gameData.moveDuration)
   },
 
   Player.prototype.flinch = function (character) {
@@ -99,7 +101,7 @@ const playerMethods = [
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
-    }, moveDuration)
+    }, gameData.moveDuration)
   },
 
   Player.prototype.victory = function (character) {
@@ -107,7 +109,7 @@ const playerMethods = [
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
-    }, moveDuration)
+    }, gameData.moveDuration)
   },
 
   Player.prototype.fall = function (character) {
@@ -115,24 +117,24 @@ const playerMethods = [
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
-    }, moveDuration)
+    }, gameData.moveDuration)
   },
 
   Player.prototype.evade = function (character) {
     const moveBack = setInterval(function () {
       character.moveBack(character);
-    }, moveSpeed);
+    }, gameData.moveSpeed);
 
     setTimeout(function () {
       clearInterval(moveBack);
       const moveForward = setInterval(function () {
         character.moveForward(character);
-      }, moveSpeed);
+      }, gameData.moveSpeed);
 
       setTimeout(function () {
         clearInterval(moveForward);
-      }, moveDuration)
-    }, moveDuration)
+      }, gameData.moveDuration)
+    }, gameData.moveDuration)
   },
 ]
 
@@ -173,37 +175,37 @@ const addCharactersToScreen = function () {
 }
 
 const determineClickResult = function (target) {
-  if (target === attackButton) {
+  if (target === gameData.attackButton) {
     player.attack(enemy);
   }
 
-  if (target === defendButton) {
+  if (target === gameData.defendButton) {
     player.defend(enemy);
   }
 
-  if (target === evadeButton) {
+  if (target === gameData.evadeButton) {
     player.evade(enemy);
   }
 
-  if (target === flinchButton) {
+  if (target === gameData.flinchButton) {
     player.flinch(enemy);
   }
 
-  if (target === victoryButton) {
+  if (target === gameData.victoryButton) {
     player.victory(enemy);
   }
 
-  if (target === fallButton) {
+  if (target === gameData.fallButton) {
     player.fall(enemy);
   }
 }
 
-mainContainer.addEventListener('click', function (event) {
+gameData.mainContainer.addEventListener('click', function (event) {
   const target = event.target;
   determineClickResult(target);
 })
 
 createPlayerMethods();
-const player = new Player('player', 50, 10, 5, playerModel, populateCharacterPoses('player'), []);
-const enemy = new Enemy('enemy', 50, 10, 5, enemyModel, populateCharacterPoses('enemy1'), []);
+const player = new Player('player', 50, 10, 5, gameData.playerModel, populateCharacterPoses('player'), []);
+const enemy = new Enemy('enemy', 50, 10, 5, gameData.enemyModel, populateCharacterPoses('enemy1'), []);
 addCharactersToScreen();
