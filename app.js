@@ -41,7 +41,7 @@ const Enemy = function (name, health, attackPower, defense, model, poses, voiceS
 Enemy.prototype = Object.create(Player.prototype);
 Enemy.prototype.constructor = Enemy;
 
-const createCharacterMethods = function () {
+const playerMethods = [
   Player.prototype.changeStance = function (character, stance) {
     // 1: Idle; 2: Ready; 3: Attack; 4: Special;
     // 5: Defend; 6: Flinch;  7: Victory; 8: Fallen;
@@ -50,24 +50,20 @@ const createCharacterMethods = function () {
         character.characterModel.src = character.poses[i][1];
       }
     }
-  }
-
+  },
   Player.prototype.moveForward = function (character) {
     const startPosition = parseInt(character.characterModel.style.left, 10);
     character.characterModel.style.left = (startPosition + character.xMoveFactor) + "px";
-  }
-
+  },
   Player.prototype.commenceAttack = function (character) {
     setTimeout(function () {
       character.changeStance(character, 'attack');
     }, moveDuration / 3);
-  }
-
+  },
   Player.prototype.moveBack = function (character) {
     const startPosition = parseInt(character.characterModel.style.left, 10);
     character.characterModel.style.left = (startPosition - character.xMoveFactor) + "px";
-  }
-
+  },
   Player.prototype.attack = function (character) {
     character.changeStance(character, 'ready');
 
@@ -89,29 +85,30 @@ const createCharacterMethods = function () {
         clearInterval(moveBack);
       }, moveDuration)
     }, moveDuration)
-  }
-
+  },
   Player.prototype.defend = function (character) {
     character.changeStance(character, 'defend');
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
     }, moveDuration)
-  }
+  },
 
   Player.prototype.flinch = function (character) {
     character.changeStance(character, 'flinch');
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
-    }, moveDuration)  }
+    }, moveDuration)
+  },
 
   Player.prototype.victory = function (character) {
     character.changeStance(character, 'victory');
 
     setTimeout(function () {
       character.changeStance(character, 'idle');
-    }, moveDuration)  }
+    }, moveDuration)
+  },
 
   Player.prototype.fall = function (character) {
     character.changeStance(character, 'fall');
@@ -119,7 +116,7 @@ const createCharacterMethods = function () {
     setTimeout(function () {
       character.changeStance(character, 'idle');
     }, moveDuration)
-  }
+  },
 
   Player.prototype.evade = function (character) {
     const moveBack = setInterval(function () {
@@ -136,6 +133,12 @@ const createCharacterMethods = function () {
         clearInterval(moveForward);
       }, moveDuration)
     }, moveDuration)
+  },
+]
+
+const createPlayerMethods = function () {
+  for (method of playerMethods) {
+    Player.prototype.method = method;
   }
 }
 
@@ -200,7 +203,7 @@ mainContainer.addEventListener('click', function (event) {
   determineClickResult(target);
 })
 
-createCharacterMethods();
+createPlayerMethods();
 const player = new Player('player', 50, 10, 5, playerModel, populateCharacterPoses('player'), []);
 const enemy = new Enemy('enemy', 50, 10, 5, enemyModel, populateCharacterPoses('enemy1'), []);
 addCharactersToScreen();
