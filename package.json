@@ -1,5 +1,9 @@
 {
+  "type": "module",
   "devDependencies": {
     "gulp": "^4.0.2"
+  },
+  "dependencies": {
+    "novicell-sprite-animation": "^1.0.5"
   }
 }

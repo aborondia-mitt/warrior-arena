@@ -12,7 +12,6 @@ const gameData = {
   moveDuration: 500,
 }
 
-
 const Player = function (name, health, attackPower, defense, model, poses, voiceSet) {
   this.name = name;
   this.health = health;
