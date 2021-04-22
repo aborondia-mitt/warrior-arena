@@ -176,27 +176,27 @@ const addCharactersToScreen = function () {
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.attack(enemy);
+    player.attack(player);
   }
 
   if (target === gameData.defendButton) {
-    player.defend(enemy);
+    player.defend(player);
   }
 
   if (target === gameData.evadeButton) {
-    player.evade(enemy);
+    player.evade(player);
   }
 
   if (target === gameData.flinchButton) {
-    player.flinch(enemy);
+    player.flinch(player);
   }
 
   if (target === gameData.victoryButton) {
-    player.victory(enemy);
+    player.victory(player);
   }
 
   if (target === gameData.fallButton) {
-    player.fall(enemy);
+    player.fall(player);
   }
 }
 
@@ -209,3 +209,5 @@ createPlayerMethods();
 const player = new Player('player', 50, 10, 5, gameData.playerModel, populateCharacterPoses('player'), []);
 const enemy = new Enemy('enemy', 50, 10, 5, gameData.enemyModel, populateCharacterPoses('enemy1'), []);
 addCharactersToScreen();
+
+//try position offset with constant setinterval update
