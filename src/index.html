@@ -12,14 +12,10 @@
 
 <body>
   <div class="main">
-    <img id="player" src="./images/bird_sprite.png" alt="">
-    <img id="enemy" alt="">
-    <div class="wrapper">
-      <div class="image" data-animation-src="./images/grayanim.png"></div>
-    </div>
-    <!-- <div class="wrapper">
-      <div class="image" data-animation-src="./images/bird_sprite.png"></div>
-    </div> -->
+    <!-- <img id="player" alt="">
+    <img id="enemy" alt=""> -->
+    <img id="player" class="hide" src="images/grayanim.png" alt="">
+
     <div class="controls">
       <button id="attack">Attack</button>
       <button id="defend">Defend</button>
@@ -27,10 +23,14 @@
       <button id="flinch">Flinch</button>
       <button id="victory">Victory</button>
       <button id="fall">Fall</button>
+      <div class="wrapper">
+      </div>
     </div>
+    <canvas class="canvas">
+
+    </canvas>
   </div>
   <script src="js/app.js"></script>
-  <script src="./js/animate.js"></script>
   <!-- <script src="app.js"></script> -->
 </body>
 
