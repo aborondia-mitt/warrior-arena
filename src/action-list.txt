@@ -1,0 +1,13 @@
+  // 0.Idle
+  // 1.Defensive
+  // 2.Low Health
+  // 3.Hurt
+  // 4.Normal Attack
+  // 5.Raise Hand Up
+  // 6.Special Attack
+  // 7.Hold Weapon Up
+  // 8.Dash Forward
+  // 9.Dash Backward
+  // 10.Victory Pose
+  // 11.Challenge
+  // 12.Fallen
