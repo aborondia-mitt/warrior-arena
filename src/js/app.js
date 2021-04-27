@@ -6,13 +6,10 @@ const gameData = {
   specialButton: document.getElementById('special'),
   defendButton: document.getElementById('defend'),
   evadeButton: document.getElementById('evade'),
-  // flinchButton: document.getElementById('flinch'),
-  // victoryButton: document.getElementById('victory'),
-  // fallButton: document.getElementById('fall'),
+  // sounds: {
+  //   blockedAttack: new Audio('../BlockedAttack.wav'),
+  // }
 }
-
-const backGround = document.getElementById('background-canvas');
-const backCtx = backGround.getContext('2d');
 
 class Player {
   constructor(name, health, attackPower, defense, model, animationSheet, voiceSet, canvas) {
@@ -90,6 +87,13 @@ class Player {
     return 0;
   }
 
+  setSequence(character1, character2, animationSequence) {
+    if (animationSequence === 'attack-vs-attack') {
+      character1.animationSequence = [0, 8, 4, 0, 0, 3, 9];
+      character2.animationSequence = [0, 0, 0, 3, 4, 0, 0];
+    }
+  }
+
   resetAnimation(character1, character2) {
     character1.currentAnimation = 0;
     character1.currentFrame = 0;
@@ -99,16 +103,12 @@ class Player {
     character2.currentSequenceStep = 0;
   }
 
-  determineActionSequence(animationSequence) {
+  determineAnimationSequence(animationSequence) {
     const character1 = this;
     const character2 = this.otherCharacter(this);
 
     this.resetAnimation(character1, character2);
-
-    if (animationSequence === 'attack-vs-attack') {
-      character1.animationSequence = [0, 8, 4, 0, 0, 3, 9];
-      character2.animationSequence = [0, 0, 0, 3, 4, 0, 0];
-    }
+    this.setSequence(character1, character2, animationSequence);
   }
 
   moveForward(moveSpeed) {
@@ -145,23 +145,15 @@ class Enemy extends Player {
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.determineActionSequence('attack-vs-attack');
-    // enemy.attack();
+    player.determineAnimationSequence('attack-vs-attack');
   }
 
   if (target === gameData.specialButton) {
-    player.specialAttack();
-    // enemy.specialAttack();
+
   }
 
   if (target === gameData.defendButton) {
-    player.defend(player);
-    // enemy.defend();
-  }
 
-  if (target === gameData.evadeButton) {
-    player.evade(player);
-    // enemy.evade();
   }
 }
 

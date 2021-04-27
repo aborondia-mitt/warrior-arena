@@ -13,7 +13,6 @@
 12.Fallen
 MF. Move Forward
 MB. Move Backward
-Pl. Player
-En. Enemy
 
-attackVSattack: >Pl8>Pl4+En3>En4+Pl3>Pl9
+attackVSattack: Character1: 0, 8, 4, 0, 0, 3, 9 | Character2: 0, 0, 0, 3, 4, 0, 0
+attackVSdefend: Character1: 0, 8, 4, 9| Character2: 1, 1, 1, 1 
