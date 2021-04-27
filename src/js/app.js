@@ -9,13 +9,9 @@ const gameData = {
   // victoryButton: document.getElementById('victory'),
   // fallButton: document.getElementById('fall'),
 }
-canvas = document.querySelector('canvas');
-ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
 class Player {
-  constructor(name, health, attackPower, defense, model, animationSheet, voiceSet) {
+  constructor(name, health, attackPower, defense, model, animationSheet, voiceSet, canvas) {
     this.name = name;
     this.health = health;
     this.attackPower = attackPower;
@@ -30,10 +26,16 @@ class Player {
     this.animations.src = animationSheet;
     this.currentAction = 0;
     this.currentActionSequence = '';
-    this.animationTime = 100;
-    this.moveDuration = 420;
+    this.animationTime = 150;
+    this.moveDuration = 520;
     this.animationSequence = [];
-    this.moveSpeed = 2;
+    this.moveSpeed = 2.5;
+    this.canvas = canvas;
+    this.canvas.width = window.innerWidth /2;
+    this.canvas.height = window.innerHeight;
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.translate(this.canvas.width / 1.5, this.canvas.height / 3);
+    this.ctx.scale(-1, 1);
   }
 
   determineAction() {
@@ -62,11 +64,11 @@ class Player {
     // return for low health, etc.
   }
 
-  attack(character) {
-    character.currentFrame = -1;
-    character.currentAction = 8;
-    character.currentActionSequence = 'attacking';
-    character.moveHorizontal(character, character.moveSpeed);
+  attack() {
+    this.currentFrame = -1;
+    this.currentAction = 8;
+    this.currentActionSequence = 'attacking';
+    this.moveHorizontal(this.moveSpeed);
   }
 
   attacking() {
@@ -75,10 +77,10 @@ class Player {
     }
   }
 
-  defend(character) {
-    character.currentFrame = -1;
-    character.currentAction = 1;
-    character.currentActionSequence = 'defending';
+  defend() {
+    this.currentFrame = -1;
+    this.currentAction = 1;
+    this.currentActionSequence = 'defending';
   }
 
   defending() {
@@ -89,23 +91,23 @@ class Player {
     return false;
   }
 
-  flinch(character) {
+  flinch() {
 
   }
 
-  victory(character) {
+  victory() {
 
   }
 
-  fall(character) {
+  fall() {
 
   }
 
-  evade(character) {
-    character.currentFrame = -1;
-    character.currentAction = 9;
-    character.currentActionSequence = 'evading';
-    character.moveHorizontal(character, -character.moveSpeed);
+  evade() {
+    this.currentFrame = -1;
+    this.currentAction = 9;
+    this.currentActionSequence = 'evading';
+    this.moveHorizontal(-this.moveSpeed);
   }
 
   evading() {
@@ -116,9 +118,10 @@ class Player {
     return false;
   }
 
-  moveHorizontal(character, directionMagnifier) {
+  moveHorizontal(moveSpeed) {
+    const character = this;
     const moveForward = setInterval(function () {
-      ctx.translate(0 - directionMagnifier, 0);
+      character.ctx.translate(0 - moveSpeed, 0);
     }, 1);
 
     setTimeout(function () {
@@ -126,7 +129,7 @@ class Player {
       setTimeout(function () {
 
         const moveBackward = setInterval(function () {
-          ctx.translate(0 + directionMagnifier, 0);
+          character.ctx.translate(0 + moveSpeed, 0);
         }, .05);
 
         setTimeout(function () {
@@ -137,41 +140,72 @@ class Player {
       }, character.moveDuration);
     }, character.moveDuration);
   }
+
+  animateCharacter() {
+    this.currentFrame = 0;
+    const character = this;
+    const frameWidth = 96;
+    const frameHeight = 96;
+    
+    //setinterval causes this context to switch to Window
+    setInterval(function () {
+      let numColumns = 4;
+      character.currentFrame++;
+
+      if (character.currentFrame >= numColumns) {
+        character.currentFrame = 0;
+        character.currentAction = character.determineAction();
+      }
+
+      let column = character.currentFrame % numColumns;
+      let row = Math.floor(character.currentFrame / numColumns);
+
+      character.ctx.clearRect(-50, -50, character.canvas.width, character.canvas.height);
+      character.ctx.drawImage(character.animations, column * frameWidth, (row + character.currentAction) * frameHeight, frameWidth, frameHeight, 10, 30, frameWidth * 4, frameHeight * 4);
+
+    }, character.animationTime);
+  }
 }
 
 class Enemy extends Player {
-  constructor(name, health, attackPower, defense, model, animations, voiceSet) {
-    super(name, health, attackPower, defense, model, animations, voiceSet);
+  constructor(name, health, attackPower, defense, model, animations, voiceSet, canvas) {
+    super(name, health, attackPower, defense, model, animations, voiceSet, canvas);
     this.name = name;
     this.startingX = '1000px';
     this.startingY = '100px';
+    this.canvas.width = window.innerWidth /2;
+    this.canvas.height = window.innerHeight;
+    this.ctx.translate(this.canvas.width / 6, this.canvas.height / 3);
   }
 }
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.attack(player);
+    player.attack();
+    // player.attack(enemy);
   }
 
   if (target === gameData.defendButton) {
     player.defend(player);
+    // player.defend(enemy);
   }
 
   if (target === gameData.evadeButton) {
     player.evade(player);
+    // player.evade(enemy);
   }
 
-  if (target === gameData.flinchButton) {
-    player.flinch(player);
-  }
+  // if (target === gameData.flinchButton) {
+  //   player.flinch(player);
+  // }
 
-  if (target === gameData.victoryButton) {
-    player.victory(player);
-  }
+  // if (target === gameData.victoryButton) {
+  //   player.victory(player);
+  // }
 
-  if (target === gameData.fallButton) {
-    player.fall(player);
-  }
+  // if (target === gameData.fallButton) {
+  //   player.fall(player);
+  // }
 }
 
 gameData.mainContainer.addEventListener('click', function (event) {
@@ -179,39 +213,11 @@ gameData.mainContainer.addEventListener('click', function (event) {
   determineClickResult(target);
 })
 
+const player = new Player('player', 50, 10, 5, gameData.player, ['images/Adela.png'], [], document.querySelector('.player-canvas'));
+const enemy = new Enemy('enemy', 50, 10, 5, gameData.player, ['images/Elicia.png'], [], document.querySelector('.enemy-canvas'));
+// name, health, attackPower, defense, model, animationSheet, voiceSet, canvas
+player.animateCharacter();
+enemy.animateCharacter(enemy);
 
-//location on canvas
-ctx.translate(canvas.width / 4, canvas.height / 3);
-//flip horizontal
-ctx.scale(-1, 1);
-
-function animateCharacter(character) {
-  character.currentFrame = 0;
-  const frameWidth = 96;
-  const frameHeight = 96;
-
-  setInterval(function () {
-    let numColumns = 4;
-    character.currentFrame++;
-
-    if (character)
-
-      if (character.currentFrame >= numColumns) {
-        character.currentFrame = 0;
-        character.currentAction = character.determineAction();
-      }
-
-    let column = character.currentFrame % numColumns;
-    let row = Math.floor(character.currentFrame / numColumns);
-
-    ctx.clearRect(-50, -50, canvas.width, canvas.height);
-    ctx.drawImage(character.animations, column * frameWidth, (row + character.currentAction) * frameHeight, frameWidth, frameHeight, 10, 30, frameWidth * 2, frameHeight * 2);
-
-  }, character.animationTime);
-}
-
-const player = new Player('player', 50, 10, 5, gameData.player, ['images/Adela.png'], []);
-// const enemy = new Enemy('enemy', 50, 10, 5, gameData.player, ['images/Elicia.png'], []);
-
-animateCharacter(player);
-// animateCharacter(enemy);
+console.log(player);
+console.log(enemy);

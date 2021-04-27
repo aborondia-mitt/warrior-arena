@@ -74,14 +74,26 @@ body {
   padding-top: 100%;
 } */
 
-.hide{
+.hide {
   display: none;
 }
 
-.canvas{
-  /* padding-left: 0;
-    padding-right: 0; */
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
+.player-canvas {
+  padding-left: 0;
+  padding-right: 0;
+  margin-right: auto;
+  display: inline-block;
+  width: 50%;
+}
+
+.canvases{
+  display: flex;
+}
+
+.enemy-canvas {
+  flex-basis: 50%;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: auto;
+  width: 50%;
 }
