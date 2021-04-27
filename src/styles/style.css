@@ -8,8 +8,6 @@ body {
   width: 100vw;
   height: 800px;
   margin: auto;
-  background-color: lightslategrey;
-
   /* background-color: lightgray; */
 }
 
@@ -78,22 +76,27 @@ body {
   display: none;
 }
 
-.player-canvas {
-  padding-left: 0;
-  padding-right: 0;
-  margin-right: auto;
-  display: inline-block;
-  width: 50%;
+#canvases {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.canvases{
-  display: flex;
+#player-canvas {
+  top: 0;
+  left: 0;
+  position: absolute;
 }
 
-.enemy-canvas {
-  flex-basis: 50%;
-  padding-left: 0;
-  padding-right: 0;
-  margin-left: auto;
-  width: 50%;
+#enemy-canvas {
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+
+#background-canvas {
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+  background-color: lightslategrey;
 }

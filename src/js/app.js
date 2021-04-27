@@ -3,12 +3,16 @@ const gameData = {
   player: document.getElementById('player'),
   enemyModel: document.getElementById('enemy'),
   attackButton: document.getElementById('attack'),
+  specialButton: document.getElementById('special'),
   defendButton: document.getElementById('defend'),
   evadeButton: document.getElementById('evade'),
   // flinchButton: document.getElementById('flinch'),
   // victoryButton: document.getElementById('victory'),
   // fallButton: document.getElementById('fall'),
 }
+
+const backGround = document.getElementById('background-canvas');
+const backCtx = backGround.getContext('2d');
 
 class Player {
   constructor(name, health, attackPower, defense, model, animationSheet, voiceSet, canvas) {
@@ -31,11 +35,36 @@ class Player {
     this.animationSequence = [];
     this.moveSpeed = 2.5;
     this.canvas = canvas;
-    this.canvas.width = window.innerWidth /2;
+    this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
     this.ctx = this.canvas.getContext('2d');
-    this.ctx.translate(this.canvas.width / 1.5, this.canvas.height / 3);
+    this.ctx.translate(this.canvas.width / 2.25, this.canvas.height / 3);
     this.ctx.scale(-1, 1);
+  }
+
+  animateCharacter() {
+    this.currentFrame = 0;
+    const character = this;
+    const frameWidth = 96;
+    const frameHeight = 96;
+
+    setInterval(function () {
+      character.ctx.clearRect(0, 0, character.canvas.width, character.canvas.height);
+      let numColumns = 4;
+      character.currentFrame++;
+
+      if (character.currentFrame >= numColumns) {
+        character.currentFrame = 0;
+        character.currentAction = character.determineAction();
+      }
+
+      let column = character.currentFrame % numColumns;
+      let row = Math.floor(character.currentFrame / numColumns);
+
+      character.ctx.clearRect(-100, -100, character.canvas.width, character.canvas.height);
+      character.ctx.drawImage(character.animations, column * frameWidth, (row + character.currentAction) * frameHeight, frameWidth, frameHeight, 10, 100, frameWidth * 3, frameHeight * 3);
+
+    }, character.animationTime);
   }
 
   determineAction() {
@@ -47,6 +76,13 @@ class Player {
       switch (this.currentAction) {
         case 8: return 4;
         case 4: return 9;
+      }
+    }
+
+    if (this.specialAttacking()) {
+      switch (this.currentAction) {
+        case 8: return 6;
+        case 6: return 9;
       }
     }
 
@@ -73,6 +109,19 @@ class Player {
 
   attacking() {
     if (this.currentActionSequence === 'attacking') {
+      return true;
+    }
+  }
+
+  specialAttack() {
+    this.currentFrame = -1;
+    this.currentAction = 8;
+    this.currentActionSequence = 'special-attacking';
+    this.moveHorizontal(this.moveSpeed);
+  }
+
+  specialAttacking() {
+    if (this.currentActionSequence === 'special-attacking') {
       return true;
     }
   }
@@ -141,30 +190,7 @@ class Player {
     }, character.moveDuration);
   }
 
-  animateCharacter() {
-    this.currentFrame = 0;
-    const character = this;
-    const frameWidth = 96;
-    const frameHeight = 96;
-    
-    //setinterval causes this context to switch to Window
-    setInterval(function () {
-      let numColumns = 4;
-      character.currentFrame++;
 
-      if (character.currentFrame >= numColumns) {
-        character.currentFrame = 0;
-        character.currentAction = character.determineAction();
-      }
-
-      let column = character.currentFrame % numColumns;
-      let row = Math.floor(character.currentFrame / numColumns);
-
-      character.ctx.clearRect(-50, -50, character.canvas.width, character.canvas.height);
-      character.ctx.drawImage(character.animations, column * frameWidth, (row + character.currentAction) * frameHeight, frameWidth, frameHeight, 10, 30, frameWidth * 4, frameHeight * 4);
-
-    }, character.animationTime);
-  }
 }
 
 class Enemy extends Player {
@@ -173,26 +199,31 @@ class Enemy extends Player {
     this.name = name;
     this.startingX = '1000px';
     this.startingY = '100px';
-    this.canvas.width = window.innerWidth /2;
+    this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.ctx.translate(this.canvas.width / 6, this.canvas.height / 3);
+    this.ctx.translate(this.canvas.width / 1.75, this.canvas.height / 3);
   }
 }
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.attack();
-    // player.attack(enemy);
+    // player.attack();
+    enemy.attack();
+  }
+
+  if (target === gameData.specialButton) {
+    // player.specialAttack();
+    enemy.specialAttack();
   }
 
   if (target === gameData.defendButton) {
-    player.defend(player);
-    // player.defend(enemy);
+    // player.defend(player);
+    enemy.defend();
   }
 
   if (target === gameData.evadeButton) {
-    player.evade(player);
-    // player.evade(enemy);
+    // player.evade(player);
+    enemy.evade();
   }
 
   // if (target === gameData.flinchButton) {
@@ -213,11 +244,11 @@ gameData.mainContainer.addEventListener('click', function (event) {
   determineClickResult(target);
 })
 
-const player = new Player('player', 50, 10, 5, gameData.player, ['images/Adela.png'], [], document.querySelector('.player-canvas'));
-const enemy = new Enemy('enemy', 50, 10, 5, gameData.player, ['images/Elicia.png'], [], document.querySelector('.enemy-canvas'));
+const player = new Player('player', 50, 10, 5, gameData.player, ['images/Adela.png'], [], document.getElementById('player-canvas'));
+const enemy = new Enemy('enemy', 50, 10, 5, gameData.player, ['images/Elicia.png'], [], document.getElementById('enemy-canvas'));
+
 // name, health, attackPower, defense, model, animationSheet, voiceSet, canvas
 player.animateCharacter();
-enemy.animateCharacter(enemy);
+enemy.animateCharacter();
 
-console.log(player);
-console.log(enemy);
+backCtx.drawImage(player.animations, 0, 0);
