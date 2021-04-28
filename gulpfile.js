@@ -16,8 +16,8 @@ function copyImages() {
   return src('src/images/*').pipe(dest('dist/images'));
 }
 
-function copyAssets() {
-  return src('src/*-assets/**').pipe(dest('dist'));
+function copyAudio() {
+  return src('src/audio/*').pipe(dest('dist/audio'));
 }
 
 exports.default = parallel(copyHtml, copyScripts, copyStyles, copyImages, copyAssets);

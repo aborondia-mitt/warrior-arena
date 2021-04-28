@@ -129,9 +129,15 @@ class Player {
     character2.currentSequenceStep = 0;
   }
 
-  determineAnimationSequence(animationSequence) {
-    const character1 = this.getFirstCharacter();
-    const character2 = this.otherCharacter(character1);
+  determineAnimationSequence(animationSequence, initiativeMatters) {
+    enemy.advantage = 99;
+    let character1 = this;
+    let character2 = this.otherCharacter(character1);
+
+    if (initiativeMatters) {
+      character1 = this.getFirstCharacter();
+      character2 = this.otherCharacter(character1);
+    }
 
     this.resetAnimation(character1, character2);
     this.setSequence(character1, character2, animationSequence);
@@ -171,7 +177,7 @@ class Enemy extends Player {
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.determineAnimationSequence('special-vs-attack');
+    player.determineAnimationSequence('attack-vs-defend', false);
   }
 
   if (target === gameData.specialButton) {
