@@ -6,8 +6,15 @@ const gameData = {
   specialButton: document.getElementById('special'),
   defendButton: document.getElementById('defend'),
   evadeButton: document.getElementById('evade'),
+}
+
+const animationData = {
+  animationSpeed: 150,
+  animationDuration: 520,
+  lastTime: 0,
   animating: true,
 }
+
 
 class Player {
   constructor(name, health, attackPower, defense, model, animationSheet, voiceSet, canvas) {
@@ -23,8 +30,8 @@ class Player {
     this.advantage = 0;
     this.currentAnimation = 0;
     this.currentAnimationSequence = '';
-    this.animationSpeed = 150;
-    this.animationDuration = 420;
+    this.currentFrame = 0;
+    this.tickCount = 0;
     this.animationSequence = [];
     this.currentSequenceStep = 0;
     this.moveSpeed = 2.5;
@@ -37,55 +44,73 @@ class Player {
     this.animate;
   }
 
-  animateCharacter() {
-    this.currentFrame = 0;
+  drawCharacter() {
+    let numColumns = 4;
     const character = this;
-    const speed = this.animationSpeed;
     const frameWidth = 96;
     const frameHeight = 96;
 
-    character.animate = setInterval(function () {
-      if (!gameData.animating) {
-        return;
+    character.ctx.clearRect(0, 0, character.canvas.width, character.canvas.height);
+    character.currentFrame++;
+
+    if (character.currentFrame >= numColumns) {
+      character.currentFrame = 0;
+      character.currentSequenceStep++;
+      character.currentAnimation = character.getNextAnimation();
+
+      if (character.currentAnimation === 8) {
+        character.moveForward(character.moveSpeed);
       }
 
-      character.ctx.clearRect(0, 0, character.canvas.width, character.canvas.height);
-      let numColumns = 4;
-      character.currentFrame++;
-
-      if (character.currentFrame >= numColumns) {
-        character.currentFrame = 0;
-        character.currentSequenceStep++;
-        character.currentAnimation = character.getNextAnimation();
-
-        if (character.currentAnimation === 8) {
-          character.moveForward(character.moveSpeed);
-        }
-
-        if (character.currentAnimation === 9) {
-          character.moveBackward(character.moveSpeed);
-        }
+      if (character.currentAnimation === 9) {
+        character.moveBackward(character.moveSpeed);
       }
+    }
 
-      let column = character.currentFrame % numColumns;
-      let row = Math.floor(character.currentFrame / numColumns);
+    let column = character.currentFrame % numColumns;
+    let row = Math.floor(character.currentFrame / numColumns);
 
-      character.ctx.clearRect(-100, -100, character.canvas.width, character.canvas.height);
-      character.ctx.drawImage(character.animations, column * frameWidth, (row + character.currentAnimation) * frameHeight, frameWidth, frameHeight, 10, 100, frameWidth * 3, frameHeight * 3);
-
-    }, speed);
+    character.ctx.clearRect(-100, -100, character.canvas.width, character.canvas.height);
+    character.ctx.drawImage(
+      character.animations,
+      column * frameWidth,
+      (row + character.currentAnimation) * frameHeight,
+      frameWidth,
+      frameHeight,
+      10,
+      100,
+      frameWidth * 3,
+      frameHeight * 3);
   }
 
-  changeAnimationSpeed(newSpeed = player.animationSpeed) {
+  beginAnimation() {
+    let win = window;
+    let now = Date.now();
+    let dt = (now - animationData.lastTime) / 1000.0;
+    player.drawCharacter();
+    enemy.drawCharacter();
+
+    setTimeout(function () {
+      win.requestAnimationFrame(player.beginAnimation);
+    }, animationData.animationSpeed);
+  }
+
+  changeAnimationSpeed(speedMultiplier) {
+    animationData.animationSpeed = animationData.animationSpeed / speedMultiplier;
+    animationData.animationDuration = animationData.animationDuration * 1.2;
+  }
+
+  resetAnimationSpeed() {
+    animationData.animationDuration = 420
+    animationData.animationSpeed = 150;
     clearInterval(player.animate);
     clearInterval(enemy.animate);
-    player.animationSpeed = newSpeed;
-    enemy.animationSpeed = newSpeed;
-    player.animateCharacter();
-    enemy.animateCharacter();
+    // this.resetAnimation(player, enemy);
+    player.drawCharacter()
+    enemy.drawCharacter()
   }
 
-  otherCharacter(character) {
+  getOtherCharacter(character) {
     if (character instanceof Enemy) {
       return player;
     }
@@ -106,6 +131,7 @@ class Player {
       return this.animationSequence[this.currentSequenceStep];
     }
 
+    // this.resetAnimationSpeed();
     return 0;
   }
 
@@ -125,32 +151,36 @@ class Player {
       character2.animationSequence = [0, 0, 0, 3, 4, 0];
     }
 
-    gameData.animating = true;
+    animationData.animating = true;
   }
 
   resetAnimation(character1, character2) {
-    gameData.animating = false;
+    clearInterval(player.animate);
+    clearInterval(enemy.animate);
+    animationData.animationSpeed = animationData.animationSpeed;
+    animationData.animating = false;
     character1.currentAnimation = 0;
     character1.currentFrame = 0;
     character1.currentSequenceStep = 0;
     character2.currentAction = 0;
     character2.currentFrame = 0;
     character2.currentSequenceStep = 0;
-    gameData.animating = true;
-
+    animationData.animating = true;
+    player.drawCharacter();
+    enemy.drawCharacter();
   }
 
   determineAnimationSequence(animationSequence, initiativeMatters) {
     enemy.advantage = 99;
     let character1 = this;
-    let character2 = this.otherCharacter(character1);
+    let character2 = this.getOtherCharacter(character1);
 
     if (initiativeMatters) {
       character1 = this.getFirstCharacter();
-      character2 = this.otherCharacter(character1);
+      character2 = this.getOtherCharacter(character1);
     }
 
-    this.changeAnimationSpeed();
+    // this.changeAnimationSpeed(2);
     this.resetAnimation(character1, character2);
     this.setSequence(character1, character2, animationSequence);
   }
@@ -163,7 +193,7 @@ class Player {
 
     setTimeout(function () {
       clearInterval(moveForward)
-    }, character.animationDuration);
+    }, animationData.animationDuration);
   }
 
   moveBackward(moveSpeed) {
@@ -174,7 +204,7 @@ class Player {
 
     setTimeout(function () {
       clearInterval(moveBackward);
-    }, character.animationDuration);
+    }, animationData.animationDuration);
   }
 }
 
@@ -197,12 +227,11 @@ const determineClickResult = function (target) {
   }
 
   if (target === gameData.defendButton) {
-    // gameData.animating = !gameData.animating;
-
+    animationData.animationSpeed += 100;
   }
 
   if (target === gameData.evadeButton) {
-
+    animationData.animationSpeed -= 100;
   }
 }
 
@@ -214,7 +243,5 @@ gameData.mainContainer.addEventListener('click', function (event) {
 const player = new Player('player', 50, 10, 5, gameData.player, ['images/Adela.png'], [], document.getElementById('player-canvas'));
 const enemy = new Enemy('enemy', 50, 10, 5, gameData.player, ['images/Elicia.png'], [], document.getElementById('enemy-canvas'));
 
-player.animateCharacter();
-enemy.animateCharacter();
-
-//added speed with clearing and resetting intervals, refine that functionality
+player.beginAnimation();
+enemy.beginAnimation();
