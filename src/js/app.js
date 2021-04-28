@@ -6,9 +6,7 @@ const gameData = {
   specialButton: document.getElementById('special'),
   defendButton: document.getElementById('defend'),
   evadeButton: document.getElementById('evade'),
-  // sounds: {
-  //   blockedAttack: new Audio('../BlockedAttack.wav'),
-  // }
+  animating: true,
 }
 
 class Player {
@@ -22,6 +20,7 @@ class Player {
     this.voiceSet = voiceSet;
     this.animations = new Image();
     this.animations.src = animationSheet;
+    this.advantage = 0;
     this.currentAnimation = 0;
     this.currentAnimationSequence = '';
     this.animationTime = 150;
@@ -43,7 +42,11 @@ class Player {
     const frameWidth = 96;
     const frameHeight = 96;
 
-    setInterval(function () {
+    const animate = setInterval(function () {
+      if (!gameData.animating) {
+        clearInterval(animate);
+      }
+
       character.ctx.clearRect(0, 0, character.canvas.width, character.canvas.height);
       let numColumns = 4;
       character.currentFrame++;
@@ -79,6 +82,14 @@ class Player {
     return enemy;
   }
 
+  getFirstCharacter() {
+    if (enemy.advantage > player.advantage) {
+      return enemy;
+    }
+
+    return player;
+  }
+
   getNextAnimation() {
     if (this.animationSequence[this.currentSequenceStep] !== undefined) {
       return this.animationSequence[this.currentSequenceStep];
@@ -92,6 +103,21 @@ class Player {
       character1.animationSequence = [0, 8, 4, 0, 0, 3, 9];
       character2.animationSequence = [0, 0, 0, 3, 4, 0, 0];
     }
+
+    if (animationSequence === 'attack-vs-defend') {
+      character1.animationSequence = [0, 8, 4, 9];
+      character2.animationSequence = [1, 1, 1, 1];
+    }
+
+    if (animationSequence === 'special-vs-attack') {
+      character1.animationTime = 1;
+      character2.animationTime = 1;
+
+      console.log(character1.animationTime);
+
+      character1.animationSequence = [0, 8, 6, 0, 3, 9];
+      character2.animationSequence = [0, 0, 0, 3, 4, 0];
+    }
   }
 
   resetAnimation(character1, character2) {
@@ -104,8 +130,8 @@ class Player {
   }
 
   determineAnimationSequence(animationSequence) {
-    const character1 = this;
-    const character2 = this.otherCharacter(this);
+    const character1 = this.getFirstCharacter();
+    const character2 = this.otherCharacter(character1);
 
     this.resetAnimation(character1, character2);
     this.setSequence(character1, character2, animationSequence);
@@ -145,11 +171,13 @@ class Enemy extends Player {
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.determineAnimationSequence('attack-vs-attack');
+    player.determineAnimationSequence('special-vs-attack');
   }
 
   if (target === gameData.specialButton) {
-
+    animating = !animating;
+    player.animateCharacter();
+    enemy.animateCharacter();
   }
 
   if (target === gameData.defendButton) {
