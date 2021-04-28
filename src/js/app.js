@@ -23,8 +23,8 @@ class Player {
     this.advantage = 0;
     this.currentAnimation = 0;
     this.currentAnimationSequence = '';
-    this.animationTime = 150;
-    this.moveDuration = 520;
+    this.animationSpeed = 150;
+    this.animationDuration = 420;
     this.animationSequence = [];
     this.currentSequenceStep = 0;
     this.moveSpeed = 2.5;
@@ -34,17 +34,19 @@ class Player {
     this.ctx = this.canvas.getContext('2d');
     this.ctx.translate(this.canvas.width / 2.25, this.canvas.height / 3);
     this.ctx.scale(-1, 1);
+    this.animate;
   }
 
   animateCharacter() {
     this.currentFrame = 0;
     const character = this;
+    const speed = this.animationSpeed;
     const frameWidth = 96;
     const frameHeight = 96;
 
-    const animate = setInterval(function () {
+    character.animate = setInterval(function () {
       if (!gameData.animating) {
-        clearInterval(animate);
+        return;
       }
 
       character.ctx.clearRect(0, 0, character.canvas.width, character.canvas.height);
@@ -71,7 +73,16 @@ class Player {
       character.ctx.clearRect(-100, -100, character.canvas.width, character.canvas.height);
       character.ctx.drawImage(character.animations, column * frameWidth, (row + character.currentAnimation) * frameHeight, frameWidth, frameHeight, 10, 100, frameWidth * 3, frameHeight * 3);
 
-    }, character.animationTime);
+    }, speed);
+  }
+
+  changeAnimationSpeed(newSpeed = player.animationSpeed) {
+    clearInterval(player.animate);
+    clearInterval(enemy.animate);
+    player.animationSpeed = newSpeed;
+    enemy.animationSpeed = newSpeed;
+    player.animateCharacter();
+    enemy.animateCharacter();
   }
 
   otherCharacter(character) {
@@ -110,23 +121,23 @@ class Player {
     }
 
     if (animationSequence === 'special-vs-attack') {
-      character1.animationTime = 1;
-      character2.animationTime = 1;
-
-      console.log(character1.animationTime);
-
       character1.animationSequence = [0, 8, 6, 0, 3, 9];
       character2.animationSequence = [0, 0, 0, 3, 4, 0];
     }
+
+    gameData.animating = true;
   }
 
   resetAnimation(character1, character2) {
+    gameData.animating = false;
     character1.currentAnimation = 0;
     character1.currentFrame = 0;
     character1.currentSequenceStep = 0;
     character2.currentAction = 0;
     character2.currentFrame = 0;
     character2.currentSequenceStep = 0;
+    gameData.animating = true;
+
   }
 
   determineAnimationSequence(animationSequence, initiativeMatters) {
@@ -139,6 +150,7 @@ class Player {
       character2 = this.otherCharacter(character1);
     }
 
+    this.changeAnimationSpeed();
     this.resetAnimation(character1, character2);
     this.setSequence(character1, character2, animationSequence);
   }
@@ -151,7 +163,7 @@ class Player {
 
     setTimeout(function () {
       clearInterval(moveForward)
-    }, character.moveDuration);
+    }, character.animationDuration);
   }
 
   moveBackward(moveSpeed) {
@@ -162,7 +174,7 @@ class Player {
 
     setTimeout(function () {
       clearInterval(moveBackward);
-    }, character.moveDuration);
+    }, character.animationDuration);
   }
 }
 
@@ -177,16 +189,19 @@ class Enemy extends Player {
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.determineAnimationSequence('attack-vs-defend', false);
+    player.determineAnimationSequence('special-vs-attack', true);
   }
 
   if (target === gameData.specialButton) {
-    animating = !animating;
-    player.animateCharacter();
-    enemy.animateCharacter();
+
   }
 
   if (target === gameData.defendButton) {
+    // gameData.animating = !gameData.animating;
+
+  }
+
+  if (target === gameData.evadeButton) {
 
   }
 }
@@ -201,3 +216,5 @@ const enemy = new Enemy('enemy', 50, 10, 5, gameData.player, ['images/Elicia.png
 
 player.animateCharacter();
 enemy.animateCharacter();
+
+//added speed with clearing and resetting intervals, refine that functionality
