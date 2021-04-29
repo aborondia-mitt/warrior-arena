@@ -16,6 +16,7 @@ class Player {
     this.currentSequenceStep = 0;
     this.currentFrame = 0;
     this.currentRoundAction = 'attack';
+    this.currentRoundActionIndex = 0;
     this.moveSpeed = 2.5;
     this.canvas = canvas;
     this.canvas.width = window.innerWidth;
@@ -52,8 +53,8 @@ class Player {
   }
 
   attackVsSpecial(character1, character2) {
-    character1.animationSequence = [0, 8, 4, 0, 3, 9];
-    character2.animationSequence = [0, 0, 3, 0, 6, 0];
+    character1.animationSequence = [0, 8, character1.currentRoundActionIndex, 0, 3, 9];
+    character2.animationSequence = [0, 0, 3, 0, character2.currentRoundActionIndex, 0];
   }
 
   defendVsDefend(character1, character2) {
@@ -79,17 +80,25 @@ class Player {
     }
   }
 
+  characterWithHighestAdvantage() {
+    if (enemy.advantage > player.advantage) {
+      return enemy;
+    }
+
+    return player;
+  }
+
   determineRoundEvents(playerAction) {
-    //Put arguments here when player vs enemy action functionality implemented
-    //include setting character1 in arguments
     let character1 = player;
     let character2 = enemy;
+
     // giveEnemyActionHint() goes before setEnemyAction
-    // const enemyAction = 'special';
     const enemyAction = this.setEnemyAction();
     let roundActions = '';
 
     if (playerAction === 'attack' && enemyAction === 'attack') {
+      character1 = player.characterWithHighestAdvantage();
+      character2 = this.getOtherCharacter(character1);
       roundActions = 'attack-vs-attack';
     }
 
@@ -98,6 +107,10 @@ class Player {
     }
 
     if (playerAction === 'attack' && enemyAction === 'special') {
+      character1 = player.characterWithHighestAdvantage();
+      character2 = this.getOtherCharacter(character1);
+      player.currentRoundActionIndex = 4;
+      enemy.currentRoundActionIndex = 6;
       roundActions = 'attack-vs-special';
     }
 
@@ -116,8 +129,10 @@ class Player {
     }
 
     if (playerAction === 'special' && enemyAction === 'attack') {
-      character1 = enemy;
-      character2 = player;
+      character1 = player.characterWithHighestAdvantage();
+      character2 = this.getOtherCharacter(character1);
+      player.currentRoundActionIndex = 6;
+      enemy.currentRoundActionIndex = 4;
       roundActions = 'attack-vs-special';
     }
 
@@ -128,6 +143,8 @@ class Player {
     }
 
     if (playerAction === 'special' && enemyAction === 'special') {
+      character1 = enemy;
+      character2 = player;
       roundActions = 'special-vs-special';
     }
 
