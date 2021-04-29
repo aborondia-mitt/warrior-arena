@@ -2,7 +2,7 @@ class Player {
   constructor(name, health, attackPower, defense, animationSheet, voiceSet, canvas) {
     this.name = name;
     this.health = health;
-    this.attackPower = attackPower;
+    this.attack = attackPower;
     this.defense = defense;
     this.voiceSet = voiceSet;
     this.animationSheet = animationSheet;
@@ -61,10 +61,12 @@ class Player {
     character1.animationSequence = [0, 1, 1, 1, 1];
     character2.animationSequence = [0, 1, 1, 1, 1];
   }
+
   defendVsSpecial(character1, character2) {
     character1.animationSequence = [0, 0, 9, 8, 6, 0];
     character2.animationSequence = [0, 8, 6, 0, 3, 9];
   }
+
   specialVsSpecial(character1, character2) {
     character1.animationSequence = [0, 8, 6, 0, 3, 9];
     character2.animationSequence = [0, 8, 6, 0, 3, 9];
@@ -88,6 +90,19 @@ class Player {
     return player;
   }
 
+  dealDamage(playerDamageMultiplier, enemyDamageMultiplier) {
+    const playerDamage = Math.abs((player.defense - enemy.attack) * playerDamageMultiplier);
+    const enemyDamage = Math.abs((enemy.defense - player.attack) * enemyDamageMultiplier);
+
+    if (playerDamage > 0) {
+      player.health -= playerDamage;
+    }
+
+    if (playerDamage > 0) {
+      enemy.health -= enemyDamage;
+    }
+  }
+
   determineRoundEvents(playerAction) {
     let character1 = player;
     let character2 = enemy;
@@ -100,10 +115,12 @@ class Player {
       character1 = player.characterWithHighestAdvantage();
       character2 = this.getOtherCharacter(character1);
       roundActions = 'attack-vs-attack';
+      this.dealDamage(1, 1);
     }
 
     if (playerAction === 'attack' && enemyAction === 'defend') {
       roundActions = 'attack-vs-defend';
+      this.dealDamage(0, .5);
     }
 
     if (playerAction === 'attack' && enemyAction === 'special') {
@@ -112,12 +129,14 @@ class Player {
       player.currentRoundActionIndex = 4;
       enemy.currentRoundActionIndex = 6;
       roundActions = 'attack-vs-special';
+      this.dealDamage(1.5, 1);
     }
 
     if (playerAction === 'defend' && enemyAction === 'attack') {
       character1 = enemy;
       character2 = player;
       roundActions = 'attack-vs-defend';
+      this.dealDamage(.5, 0);
     }
 
     if (playerAction === 'defend' && enemyAction === 'defend') {
@@ -126,6 +145,7 @@ class Player {
 
     if (playerAction === 'defend' && enemyAction === 'special') {
       roundActions = 'defend-vs-special';
+      this.dealDamage(0, 1.5);
     }
 
     if (playerAction === 'special' && enemyAction === 'attack') {
@@ -134,19 +154,25 @@ class Player {
       player.currentRoundActionIndex = 6;
       enemy.currentRoundActionIndex = 4;
       roundActions = 'attack-vs-special';
+      this.dealDamage(1, 1.5);
     }
 
     if (playerAction === 'special' && enemyAction === 'defend') {
       character1 = enemy;
       character2 = player;
       roundActions = 'defend-vs-special';
+      this.dealDamage(1.5, 0);
     }
 
     if (playerAction === 'special' && enemyAction === 'special') {
       character1 = enemy;
       character2 = player;
       roundActions = 'special-vs-special';
+      this.dealDamage(2, 2);
     }
+
+    console.log('PHP ' + player.health)
+    console.log('EHP ' + enemy.health)
 
     animator.determineAnimationSequence(character1, character2, roundActions);
   }
