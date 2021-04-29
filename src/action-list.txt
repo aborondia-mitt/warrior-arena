@@ -16,7 +16,7 @@ MB. Move Backward
 
 attackVSattack - Character1: 0, 8, 4, 0, 0, 3, 9 | Character2: 0, 0, 0, 3, 4, 0, 0
 attackVSdefend - Character1: 0, 8, 4, 9 | Character2: 1, 1, 1, 1 
-specialVSattack - Character1: 0, 8, 6, 0, 3, 9 | Character2: 0, 0, 3, 0, 4, 0
+attackVSspecial - Character1: 0, 0, 3, 0, 4, 0 | Character2:  0, 1, 1, 1, 1
 defendVSdefend - Character1: 0 ,1, 1, 1, 1 | Character2: 0, 1, 1, 1, 1
-defendVSspecial - Character1: 0, 1, 9, 8, 6, 0 | Character2: 0, 8, 6, 0, 3, 9
+defendVSspecial - Character1: 0, 0, 9, 8, 6, 0 | Character2: 0, 8, 6, 0, 3, 9
 specialVSspecial - Character1: 0, 8, 6, 0, 3, 9 | Character1: 0, 8, 6, 0, 3, 9

@@ -15,6 +15,7 @@ class Player {
     this.animationSequence = [];
     this.currentSequenceStep = 0;
     this.currentFrame = 0;
+    this.currentRoundAction = 'attack';
     this.moveSpeed = 2.5;
     this.canvas = canvas;
     this.canvas.width = window.innerWidth;
@@ -50,9 +51,9 @@ class Player {
     character2.animationSequence = [1, 1, 1, 1];
   }
 
-  specialVsAttack(character1, character2) {
-    character1.animationSequence = [0, 8, 6, 0, 3, 9];
-    character2.animationSequence = [0, 0, 3, 0, 4, 0];
+  attackVsSpecial(character1, character2) {
+    character1.animationSequence = [0, 8, 4, 0, 3, 9];
+    character2.animationSequence = [0, 0, 3, 0, 6, 0];
   }
 
   defendVsDefend(character1, character2) {
@@ -60,7 +61,7 @@ class Player {
     character2.animationSequence = [0, 1, 1, 1, 1];
   }
   defendVsSpecial(character1, character2) {
-    character1.animationSequence = [0, 1, 9, 8, 6, 0];
+    character1.animationSequence = [0, 0, 9, 8, 6, 0];
     character2.animationSequence = [0, 8, 6, 0, 3, 9];
   }
   specialVsSpecial(character1, character2) {
@@ -68,9 +69,69 @@ class Player {
     character2.animationSequence = [0, 8, 6, 0, 3, 9];
   }
 
-  determineRoundEvents(character1, character2) {
+  setEnemyAction() {
+    const action = Math.floor(Math.random() * (3 + 1 - 1)) + 1;
+
+    switch (action) {
+      case 1: return 'attack';
+      case 2: return 'special';
+      case 3: return 'defend';
+    }
+  }
+
+  determineRoundEvents(playerAction) {
     //Put arguments here when player vs enemy action functionality implemented
-    animator.determineAnimationSequence('special-vs-special', 'false');
+    //include setting character1 in arguments
+    let character1 = player;
+    let character2 = enemy;
+    // giveEnemyActionHint() goes before setEnemyAction
+    // const enemyAction = 'special';
+    const enemyAction = this.setEnemyAction();
+    let roundActions = '';
+
+    if (playerAction === 'attack' && enemyAction === 'attack') {
+      roundActions = 'attack-vs-attack';
+    }
+
+    if (playerAction === 'attack' && enemyAction === 'defend') {
+      roundActions = 'attack-vs-defend';
+    }
+
+    if (playerAction === 'attack' && enemyAction === 'special') {
+      roundActions = 'attack-vs-special';
+    }
+
+    if (playerAction === 'defend' && enemyAction === 'attack') {
+      character1 = enemy;
+      character2 = player;
+      roundActions = 'attack-vs-defend';
+    }
+
+    if (playerAction === 'defend' && enemyAction === 'defend') {
+      roundActions = 'defend-vs-defend';
+    }
+
+    if (playerAction === 'defend' && enemyAction === 'special') {
+      roundActions = 'defend-vs-special';
+    }
+
+    if (playerAction === 'special' && enemyAction === 'attack') {
+      character1 = enemy;
+      character2 = player;
+      roundActions = 'attack-vs-special';
+    }
+
+    if (playerAction === 'special' && enemyAction === 'defend') {
+      character1 = enemy;
+      character2 = player;
+      roundActions = 'defend-vs-special';
+    }
+
+    if (playerAction === 'special' && enemyAction === 'special') {
+      roundActions = 'special-vs-special';
+    }
+
+    animator.determineAnimationSequence(character1, character2, roundActions);
   }
 }
 
@@ -85,15 +146,15 @@ class Enemy extends Player {
 
 const determineClickResult = function (target) {
   if (target === gameData.attackButton) {
-    player.determineRoundEvents();
+    player.determineRoundEvents('attack');
   }
 
   if (target === gameData.specialButton) {
-
+    player.determineRoundEvents('special');
   }
 
   if (target === gameData.defendButton) {
-
+    player.determineRoundEvents('defend');
   }
 
   if (target === gameData.evadeButton) {

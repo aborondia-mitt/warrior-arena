@@ -88,15 +88,7 @@ class Animator {
     return 0;
   }
 
-  determineAnimationSequence(animationSequence, initiativeMatters) {
-    let character1 = player;
-    let character2 = player.getOtherCharacter(character1);
-
-    if (initiativeMatters) {
-      character1 = player.getFirstCharacter();
-      character2 = player.getOtherCharacter(character1);
-    }
-
+  determineAnimationSequence(character1, character2, animationSequence) {
     animator.resetAnimation(character1, character2);
     animator.setAnimationSequence(character1, character2, animationSequence);
   }
@@ -110,8 +102,8 @@ class Animator {
       player.attackVsDefend(character1, character2);
     }
 
-    if (animationSequence === 'special-vs-attack') {
-      player.specialVsAttack(character1, character2);
+    if (animationSequence === 'attack-vs-special') {
+      player.attackVsSpecial(character1, character2);
     }
 
     if (animationSequence === 'defend-vs-defend') {
