@@ -114,6 +114,17 @@ class Animator {
       player.specialVsAttack(character1, character2);
     }
 
+    if (animationSequence === 'defend-vs-defend') {
+      player.defendVsDefend(character1, character2);
+    }
+
+    if (animationSequence === 'defend-vs-special') {
+      player.defendVsSpecial(character1, character2);
+    }
+
+    if (animationSequence === 'special-vs-special') {
+      player.specialVsSpecial(character1, character2);
+    }
   }
 }
 

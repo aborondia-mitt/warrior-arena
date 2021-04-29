@@ -52,12 +52,25 @@ class Player {
 
   specialVsAttack(character1, character2) {
     character1.animationSequence = [0, 8, 6, 0, 3, 9];
-    character2.animationSequence = [0, 0, 0, 3, 4, 0];
+    character2.animationSequence = [0, 0, 3, 0, 4, 0];
   }
 
-  determineRoundEvents() {
+  defendVsDefend(character1, character2) {
+    character1.animationSequence = [0, 1, 1, 1, 1];
+    character2.animationSequence = [0, 1, 1, 1, 1];
+  }
+  defendVsSpecial(character1, character2) {
+    character1.animationSequence = [0, 1, 9, 8, 6, 0];
+    character2.animationSequence = [0, 8, 6, 0, 3, 9];
+  }
+  specialVsSpecial(character1, character2) {
+    character1.animationSequence = [0, 8, 6, 0, 3, 9];
+    character2.animationSequence = [0, 8, 6, 0, 3, 9];
+  }
+
+  determineRoundEvents(character1, character2) {
     //Put arguments here when player vs enemy action functionality implemented
-    animator.determineAnimationSequence('special-vs-attack', true);
+    animator.determineAnimationSequence('special-vs-special', 'false');
   }
 }
 
