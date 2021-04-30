@@ -90,6 +90,10 @@ class Player {
     return player;
   }
 
+  isFightOver() {
+
+  }
+
   dealDamage(playerDamageMultiplier, enemyDamageMultiplier) {
     const playerDamage = Math.abs((player.defense - enemy.attack) * playerDamageMultiplier);
     const enemyDamage = Math.abs((enemy.defense - player.attack) * enemyDamageMultiplier);
@@ -115,12 +119,12 @@ class Player {
       character1 = player.characterWithHighestAdvantage();
       character2 = this.getOtherCharacter(character1);
       roundActions = 'attack-vs-attack';
-      this.dealDamage(1, 1);
+      player.dealDamage(1, 1);
     }
 
     if (playerAction === 'attack' && enemyAction === 'defend') {
       roundActions = 'attack-vs-defend';
-      this.dealDamage(0, .5);
+      player.dealDamage(0, .5);
     }
 
     if (playerAction === 'attack' && enemyAction === 'special') {
@@ -129,14 +133,14 @@ class Player {
       player.currentRoundActionIndex = 4;
       enemy.currentRoundActionIndex = 6;
       roundActions = 'attack-vs-special';
-      this.dealDamage(1.5, 1);
+      player.dealDamage(1.5, 1);
     }
 
     if (playerAction === 'defend' && enemyAction === 'attack') {
       character1 = enemy;
       character2 = player;
       roundActions = 'attack-vs-defend';
-      this.dealDamage(.5, 0);
+      player.dealDamage(.5, 0);
     }
 
     if (playerAction === 'defend' && enemyAction === 'defend') {
@@ -145,7 +149,7 @@ class Player {
 
     if (playerAction === 'defend' && enemyAction === 'special') {
       roundActions = 'defend-vs-special';
-      this.dealDamage(0, 1.5);
+      player.dealDamage(0, 1.5);
     }
 
     if (playerAction === 'special' && enemyAction === 'attack') {
@@ -154,25 +158,27 @@ class Player {
       player.currentRoundActionIndex = 6;
       enemy.currentRoundActionIndex = 4;
       roundActions = 'attack-vs-special';
-      this.dealDamage(1, 1.5);
+      player.dealDamage(1, 1.5);
     }
 
     if (playerAction === 'special' && enemyAction === 'defend') {
       character1 = enemy;
       character2 = player;
       roundActions = 'defend-vs-special';
-      this.dealDamage(1.5, 0);
+      player.dealDamage(1.5, 0);
     }
 
     if (playerAction === 'special' && enemyAction === 'special') {
       character1 = enemy;
       character2 = player;
       roundActions = 'special-vs-special';
-      this.dealDamage(2, 2);
+      player.dealDamage(2, 2);
     }
 
     console.log('PHP ' + player.health)
     console.log('EHP ' + enemy.health)
+
+    player.isFightOver();
 
     animator.determineAnimationSequence(character1, character2, roundActions);
   }
@@ -187,26 +193,6 @@ class Enemy extends Player {
   }
 }
 
-const determineClickResult = function (target) {
-  if (target === gameData.attackButton) {
-    player.determineRoundEvents('attack');
-  }
 
-  if (target === gameData.specialButton) {
-    player.determineRoundEvents('special');
-  }
 
-  if (target === gameData.defendButton) {
-    player.determineRoundEvents('defend');
-  }
-
-  if (target === gameData.evadeButton) {
-
-  }
-}
-
-gameData.mainContainer.addEventListener('click', function (event) {
-  const target = event.target;
-  determineClickResult(target);
-})
-
+//continue from isFightOver()
