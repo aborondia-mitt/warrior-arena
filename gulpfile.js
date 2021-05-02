@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-const { src, dest, series, parallel } = require('gulp');
+const { src, dest, series, parallel, watch } = require('gulp');
 const concat = require('gulp-concat');
 const htmlReplace = require('gulp-html-replace');
 const imagemin = require('gulp-imagemin');
@@ -24,18 +24,18 @@ function scriptsTask() {
 
 function stylesTask() {
   return src('src/styles/*.css')
-  .pipe(dest('dist/styles'));
+    .pipe(dest('dist/styles'));
 }
 
 function imagesTask() {
   return src('src/images/*')
-  .pipe(imagemin())
-  .pipe(dest('dist/images'));
+    .pipe(imagemin())
+    .pipe(dest('dist/images'));
 }
 
 function audioTask() {
   return src('src/audio/*')
-  .pipe(dest('dist/audio'));
+    .pipe(dest('dist/audio'));
 }
 
 exports.html = htmlTask;

@@ -18,8 +18,26 @@ const determineClickResult = function (target) {
     player.determineRoundEvents('defend');
   }
 
-  if (target === gameData.evadeButton) {
+  if (target === gameData.playerAdvantageButton) {
+    player.advantage = 99;
+    enemy.advantage = 0;
+  }
 
+  if (target === gameData.enemyAdvantageButton) {
+    player.advantage = 0;
+    enemy.advantage = 99;
+  }
+
+  if (target === gameData.enemyAttack) {
+    temporaryEnemyAction = 1;
+  }
+
+  if (target === gameData.enemySpecial) {
+    temporaryEnemyAction = 2;
+  }
+
+  if (target === gameData.enemyDefend) {
+    temporaryEnemyAction = 3;
   }
 }
 

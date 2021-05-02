@@ -5,7 +5,11 @@ const gameData = {
   attackButton: document.getElementById('attack'),
   specialButton: document.getElementById('special'),
   defendButton: document.getElementById('defend'),
-  evadeButton: document.getElementById('evade'),
+  playerAdvantageButton: document.getElementById('player-advantage'),
+  enemyAdvantageButton: document.getElementById('enemy-advantage'),
+  enemyAttack: document.getElementById('e-attack'),
+  enemySpecial: document.getElementById('e-special'),
+  enemyDefend: document.getElementById('e-defend'),
   playerCanvas: document.getElementById('player-canvas'),
   enemyCanvas: document.getElementById('enemy-canvas'),
 }

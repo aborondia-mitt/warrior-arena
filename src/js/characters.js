@@ -1,3 +1,5 @@
+let temporaryEnemyAction = 3;
+
 class Player {
   constructor(name, health, attackPower, defense, animationSheet, voiceSet, canvas) {
     this.name = name;
@@ -73,7 +75,8 @@ class Player {
   }
 
   setEnemyAction() {
-    const action = Math.floor(Math.random() * (3 + 1 - 1)) + 1;
+    // const action = Math.floor(Math.random() * (3 + 1 - 1)) + 1;
+    const action = temporaryEnemyAction;
 
     switch (action) {
       case 1: return 'attack';
