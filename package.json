@@ -1,9 +1,15 @@
 {
   "devDependencies": {
+    "browser-sync": "^2.26.14",
     "concat": "^1.0.3",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
     "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
+    "gulp-cr-lf-replace": "^0.0.4",
+    "gulp-eslint": "^6.0.0",
     "gulp-html-replace": "^1.6.2",
     "gulp-imagemin": "^7.1.0",
     "gulp-sourcemaps": "^3.0.0",

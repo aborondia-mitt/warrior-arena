@@ -4,6 +4,10 @@ body {
   box-sizing: border-box;
 }
 
+::placeholder{
+  color: red;
+}
+
 .main {
   width: 100vw;
   height: 800px;

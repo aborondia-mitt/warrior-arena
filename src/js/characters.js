@@ -1,11 +1,14 @@
 let temporaryEnemyAction = 3;
 
+
+
 class Player {
   constructor(name, health, attackPower, defense, animationSheet, voiceSet, canvas) {
     this.name = name;
     this.health = health;
     this.attack = attackPower;
     this.defense = defense;
+    this.dead = false;
     this.voiceSet = voiceSet;
     this.animationSheet = animationSheet;
     this.animationColumns = 4;
@@ -18,7 +21,9 @@ class Player {
     this.currentSequenceStep = 0;
     this.currentFrame = 0;
     this.currentRoundAction = 'attack';
-    this.currentRoundActionIndex = 0;
+    this.variableAction1 = 0;
+    this.variableAction2 = 0;
+    this.variableAction3 = 0;
     this.moveSpeed = 2.5;
     this.canvas = canvas;
     this.canvas.width = window.innerWidth;
@@ -44,36 +49,6 @@ class Player {
     return player;
   }
 
-  attackVsAttack(character1, character2) {
-    character1.animationSequence = [0, 8, 4, 0, 0, 3, 9];
-    character2.animationSequence = [0, 0, 0, 3, 4, 0, 0];
-  }
-
-  attackVsDefend(character1, character2) {
-    character1.animationSequence = [0, 8, 4, 9];
-    character2.animationSequence = [1, 1, 1, 1];
-  }
-
-  attackVsSpecial(character1, character2) {
-    character1.animationSequence = [0, 8, character1.currentRoundActionIndex, 0, 3, 9];
-    character2.animationSequence = [0, 0, 3, 0, character2.currentRoundActionIndex, 0];
-  }
-
-  defendVsDefend(character1, character2) {
-    character1.animationSequence = [0, 1, 1, 1, 1];
-    character2.animationSequence = [0, 1, 1, 1, 1];
-  }
-
-  defendVsSpecial(character1, character2) {
-    character1.animationSequence = [0, 0, 9, 8, 6, 0];
-    character2.animationSequence = [0, 8, 6, 0, 3, 9];
-  }
-
-  specialVsSpecial(character1, character2) {
-    character1.animationSequence = [0, 8, 6, 0, 3, 9];
-    character2.animationSequence = [0, 8, 6, 0, 3, 9];
-  }
-
   setEnemyAction() {
     // const action = Math.floor(Math.random() * (3 + 1 - 1)) + 1;
     const action = temporaryEnemyAction;
@@ -93,8 +68,34 @@ class Player {
     return player;
   }
 
-  isFightOver() {
+  endFight(character1, character2) {
+    if (character1.health <= 0) {
+      character1.dead = true;
+    }
 
+    if (character2.health <= 0) {
+      character2.dead = true;
+    }
+
+    if (character1.health <= 0 && character2.health <= 0) {
+      player.characterWithHighestAdvantage().dead = false;
+    }
+
+    if (character1.dead === true) {
+
+    }
+
+    if (character2.dead === true) {
+
+    }
+  }
+
+  fightIsOver() {
+    if (player.health <= 0 || enemy.health <= 0) {
+      return true;
+    }
+
+    return false;
   }
 
   dealDamage(playerDamageMultiplier, enemyDamageMultiplier) {
@@ -105,7 +106,7 @@ class Player {
       player.health -= playerDamage;
     }
 
-    if (playerDamage > 0) {
+    if (enemyDamage > 0) {
       enemy.health -= enemyDamage;
     }
   }
@@ -133,8 +134,8 @@ class Player {
     if (playerAction === 'attack' && enemyAction === 'special') {
       character1 = player.characterWithHighestAdvantage();
       character2 = this.getOtherCharacter(character1);
-      player.currentRoundActionIndex = 4;
-      enemy.currentRoundActionIndex = 6;
+      player.attackAction = 4;
+      enemy.attackAction = 6;
       roundActions = 'attack-vs-special';
       player.dealDamage(1.5, 1);
     }
@@ -158,8 +159,8 @@ class Player {
     if (playerAction === 'special' && enemyAction === 'attack') {
       character1 = player.characterWithHighestAdvantage();
       character2 = this.getOtherCharacter(character1);
-      player.currentRoundActionIndex = 6;
-      enemy.currentRoundActionIndex = 4;
+      player.attackAction = 6;
+      enemy.attackAction = 4;
       roundActions = 'attack-vs-special';
       player.dealDamage(1, 1.5);
     }
@@ -172,17 +173,18 @@ class Player {
     }
 
     if (playerAction === 'special' && enemyAction === 'special') {
-      character1 = enemy;
-      character2 = player;
       roundActions = 'special-vs-special';
       player.dealDamage(2, 2);
     }
 
-    console.log('PHP ' + player.health)
-    console.log('EHP ' + enemy.health)
+    // if (player.fightIsOver()) {
+    //   player.endFight(character1, character2, roundActions);
+    // }
 
-    player.isFightOver();
-
+    // console.log("player " + player.health);
+    // console.log("enemy " + enemy.health);
+    // console.log("player " + player.dead);
+    // console.log("enemy " + enemy.dead);
     animator.determineAnimationSequence(character1, character2, roundActions);
   }
 }
@@ -197,5 +199,4 @@ class Enemy extends Player {
 }
 
 
-
-//continue from isFightOver()
+// edit endFight variable actions based on roundActions

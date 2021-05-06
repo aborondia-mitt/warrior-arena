@@ -1,6 +1,6 @@
 const animator = new Animator();
-const player = new Player('player', 50, 10, 5, ['images/Adela.png'], [], gameData.playerCanvas);
-const enemy = new Enemy('enemy', 50, 10, 5, ['images/Elicia.png'], [], gameData.enemyCanvas);
+const player = new Player('player', 1, 25, 5, ['images/Adela.png'], [], gameData.playerCanvas);
+const enemy = new Enemy('enemy', 1, 25, 5, ['images/Elicia.png'], [], gameData.enemyCanvas);
 
 animator.beginAnimation(player);
 animator.beginAnimation(enemy);
@@ -38,6 +38,14 @@ const determineClickResult = function (target) {
 
   if (target === gameData.enemyDefend) {
     temporaryEnemyAction = 3;
+  }
+
+  if (target === gameData.playerHealthButton) {
+    player.health = 999;
+  }
+
+  if (target === gameData.enemyHealthButton) {
+    enemy.health = 999;
   }
 }
 
