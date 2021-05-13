@@ -1,4 +1,4 @@
-let temporaryEnemyAction = 3;
+let temporaryEnemyAction = 1;
 
 
 
@@ -9,9 +9,11 @@ class Player {
     this.attack = attackPower;
     this.defense = defense;
     this.dead = false;
+    this.victorious = false;
     this.voiceSet = voiceSet;
     this.animationSheet = animationSheet;
     this.animationColumns = 4;
+    this.attackAction = 4;
     this.animations = new Image();
     this.animations.src = animationSheet;
     this.advantage = 0;
@@ -21,9 +23,6 @@ class Player {
     this.currentSequenceStep = 0;
     this.currentFrame = 0;
     this.currentRoundAction = 'attack';
-    this.variableAction1 = 0;
-    this.variableAction2 = 0;
-    this.variableAction3 = 0;
     this.moveSpeed = 2.5;
     this.canvas = canvas;
     this.canvas.width = window.innerWidth;
@@ -71,22 +70,25 @@ class Player {
   endFight(character1, character2) {
     if (character1.health <= 0) {
       character1.dead = true;
+      character2.victorious = true;
     }
 
     if (character2.health <= 0) {
       character2.dead = true;
+      character1.victorious = true;
     }
 
     if (character1.health <= 0 && character2.health <= 0) {
       player.characterWithHighestAdvantage().dead = false;
+      player.characterWithHighestAdvantage().victorious = true;
+
+      this.getOtherCharacter(player.characterWithHighestAdvantage()).dead = true;
+      this.getOtherCharacter(player.characterWithHighestAdvantage()).victorious = false;
     }
 
     if (character1.dead === true) {
-
-    }
-
-    if (character2.dead === true) {
-
+      character1.variableAction = 12;
+      character2.variableAction = 10;
     }
   }
 
@@ -122,12 +124,12 @@ class Player {
     if (playerAction === 'attack' && enemyAction === 'attack') {
       character1 = player.characterWithHighestAdvantage();
       character2 = this.getOtherCharacter(character1);
-      roundActions = 'attack-vs-attack';
+      roundActions = 'attackVsAttack';
       player.dealDamage(1, 1);
     }
 
     if (playerAction === 'attack' && enemyAction === 'defend') {
-      roundActions = 'attack-vs-defend';
+      roundActions = 'attackVsDefend';
       player.dealDamage(0, .5);
     }
 
@@ -136,23 +138,23 @@ class Player {
       character2 = this.getOtherCharacter(character1);
       player.attackAction = 4;
       enemy.attackAction = 6;
-      roundActions = 'attack-vs-special';
+      roundActions = 'attackVsSpecial';
       player.dealDamage(1.5, 1);
     }
 
     if (playerAction === 'defend' && enemyAction === 'attack') {
       character1 = enemy;
       character2 = player;
-      roundActions = 'attack-vs-defend';
+      roundActions = 'attackVsDefend';
       player.dealDamage(.5, 0);
     }
 
     if (playerAction === 'defend' && enemyAction === 'defend') {
-      roundActions = 'defend-vs-defend';
+      roundActions = 'defendVsDefend';
     }
 
     if (playerAction === 'defend' && enemyAction === 'special') {
-      roundActions = 'defend-vs-special';
+      roundActions = 'defendVsSpecial';
       player.dealDamage(0, 1.5);
     }
 
@@ -161,25 +163,25 @@ class Player {
       character2 = this.getOtherCharacter(character1);
       player.attackAction = 6;
       enemy.attackAction = 4;
-      roundActions = 'attack-vs-special';
+      roundActions = 'attackVsSpecial';
       player.dealDamage(1, 1.5);
     }
 
     if (playerAction === 'special' && enemyAction === 'defend') {
       character1 = enemy;
       character2 = player;
-      roundActions = 'defend-vs-special';
+      roundActions = 'defendVsSpecial';
       player.dealDamage(1.5, 0);
     }
 
     if (playerAction === 'special' && enemyAction === 'special') {
-      roundActions = 'special-vs-special';
+      roundActions = 'specialVsSpecial';
       player.dealDamage(2, 2);
     }
 
-    // if (player.fightIsOver()) {
-    //   player.endFight(character1, character2, roundActions);
-    // }
+    if (player.fightIsOver()) {
+      player.endFight(character1, character2);
+    }
 
     // console.log("player " + player.health);
     // console.log("enemy " + enemy.health);
@@ -199,4 +201,5 @@ class Enemy extends Player {
 }
 
 
-// edit endFight variable actions based on roundActions
+// work out the best way to handle setanimationsequence for death/victory in animation.js
+// fix characters dashing back after fatal hit

@@ -1,4 +1,5 @@
 const animator = new Animator();
+let animationPaused = false;
 const player = new Player('player', 1, 25, 5, ['images/Adela.png'], [], gameData.playerCanvas);
 const enemy = new Enemy('enemy', 1, 25, 5, ['images/Elicia.png'], [], gameData.enemyCanvas);
 
@@ -52,4 +53,9 @@ const determineClickResult = function (target) {
 gameData.mainContainer.addEventListener('click', function (event) {
   const target = event.target;
   determineClickResult(target);
+})
+
+gameData.win.addEventListener('resize', (event) => {
+animator.drawCharacter(player);
+animator.drawCharacter(enemy);
 })

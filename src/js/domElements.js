@@ -1,4 +1,5 @@
 const gameData = {
+  win: window,
   mainContainer: document.querySelector('.main'),
   player: document.getElementById('player'),
   enemyModel: document.getElementById('enemy'),

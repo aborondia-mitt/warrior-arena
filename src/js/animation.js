@@ -1,6 +1,5 @@
 const animationSequences = {
   character1: {
-    attackAction: 4,
     attackVsAttack: [0, 8, 4, 0, 0, 3, 9],
     attackVsDefend: [0, 8, 4, 9],
     attackVsSpecial: [0, 8, undefined, 0, 0, 3, 9],
@@ -8,18 +7,14 @@ const animationSequences = {
     defendVsSpecial: [0, 0, 9, 8, 6, 0],
     specialVsSpecial: [0, 8, 6, 0, 3, 9],
 
-    // ifDead: {
-    //   attackVsAttack: [0, 8, 4, 0, 0, 3, 9],
-    //   attackVsDefend: [0, 8, 4, 9],
-    //   attackVsSpecial: [0, 8, undefined, 0, 0, 3, 9],
-    //   defendVsDefend: [0, 1, 1, 1, 1],
-    //   defendVsSpecial: [0, 0, 9, 8, 6, 0],
-    //   specialVsSpecial: [0, 8, 6, 0, 3, 9],
-    // },
+    ifDead: {
+      attackVsAttack: [0, 8, 4, 0, 0, 3, 12],
+      attackVsSpecial: [0, 8, undefined, 0, 0, 3, 12],
+      specialVsSpecial: [0, 8, 6, 0, 3, 12],
+    },
   },
 
   character2: {
-    attackAction: 4,
     attackVsAttack: [0, 0, 0, 3, 4, 0, 0],
     attackVsDefend: [1, 1, 1, 1],
     attackVsSpecial: [0, 0, 0, 3, undefined, 0, 0],
@@ -27,16 +22,16 @@ const animationSequences = {
     defendVsSpecial: [0, 8, 6, 0, 3, 9],
     specialVsSpecial: [0, 8, 6, 0, 3, 9],
 
-    // ifDead: {
-    //   attackVsAttack: [0, 0, 0, 3, 4, 0, 0],
-    //   attackVsDefend: [1, 1, 1, 1],
-    //   attackVsSpecial: [0, 0, 0, 3, undefined, 0, 0],
-    //   defendVsDefend: [0, 1, 1, 1, 1],
-    //   defendVsSpecial: [0, 8, 6, 0, 3, 9],
-    //   specialVsSpecial: [0, 8, 6, 0, 3, 9],
-    // },
+    ifDead: {
+      attackVsAttack: [0, 0, 0, 3, 12, 12, 12],
+      attackVsDefend: [1, 1, 1, 12],
+      attackVsSpecial: [0, 0, 0, 3, 12, 12, 12],
+      defendVsSpecial: [0, 8, 6, 0, 3, 12],
+      specialVsSpecial: [0, 8, 6, 0, 3, 12],
+    },
   },
 }
+
 
 class Animator {
   constructor() {
@@ -45,12 +40,11 @@ class Animator {
   }
 
   beginAnimation() {
-    let win = window;
     animator.drawCharacter(player);
     animator.drawCharacter(enemy);
 
     setTimeout(function () {
-      win.requestAnimationFrame(animator.beginAnimation);
+      gameData.win.requestAnimationFrame(animator.beginAnimation);
     }, animator.animationSpeed);
   }
 
@@ -129,6 +123,11 @@ class Animator {
       return 12;
     }
 
+    if (character.victorious) {
+      animator.animationSpeed = 300;
+      return 10;
+    }
+
     return 0;
   }
 
@@ -137,40 +136,42 @@ class Animator {
     animator.setAnimationSequence(character1, character2, animationSequence);
   }
 
+  setvariableSequenceSteps(character1, character2, animationSequence) {
+    let character1Sequence = animationSequences.character1[animationSequence].map((step) => step);
+    let character2Sequence = animationSequences.character2[animationSequence].map((step) => step);
+
+    for (let i = 0; i < character1Sequence.length; i++) {
+      if (character1Sequence[i] === undefined) {
+        character1Sequence[i] = character1.attackAction;
+      }
+    }
+
+    for (let i = 0; i < character2Sequence.length; i++) {
+      if (character2Sequence[i] === undefined) {
+        character2Sequence[i] = character2.attackAction;
+      }
+    }
+
+    if (character1.dead) {
+      character1Sequence = animationSequences.character1.ifDead[animationSequence];
+    }
+
+    if (character2.dead) {
+      character2Sequence = animationSequences.character2.ifDead[animationSequence];
+      for (let i = 0; i < character1Sequence.length; i++) {
+        if (character1Sequence[i] === 3) {
+          character1Sequence[i] = 0;
+        }
+      }
+    }
+
+    return [character1Sequence, character2Sequence];
+  }
+
   setAnimationSequence(character1, character2, animationSequence) {
-    // add if dead check somewhere here or beforehand
-    if (animationSequence === 'attack-vs-attack') {
-      character1.animationSequence = animationSequences.character1.attackVsAttack;
-      character2.animationSequence = animationSequences.character2.attackVsAttack;
-    }
+    const characterSequences = this.setvariableSequenceSteps(character1, character2, animationSequence);
 
-    if (animationSequence === 'attack-vs-defend') {
-      character1.animationSequence = animationSequences.character1.attackVsDefend;
-      character2.animationSequence = animationSequences.character2.attackVsDefend;
-    }
-
-    if (animationSequence === 'attack-vs-special') {
-      animationSequences.character1.attackVsSpecial[2] = character1.attackAction;
-      animationSequences.character2.attackVsSpecial[4] = character2.attackAction;
-
-      character1.animationSequence = animationSequences.character1.attackVsSpecial;
-      character2.animationSequence = animationSequences.character2.attackVsSpecial;
-    }
-
-    if (animationSequence === 'defend-vs-defend') {
-      character1.animationSequence = animationSequences.character1.defendVsDefend;
-      character2.animationSequence = animationSequences.character2.defendVsDefend;
-    }
-
-    if (animationSequence === 'defend-vs-special') {
-      character1.animationSequence = animationSequences.character1.defendVsSpecial;
-      character2.animationSequence = animationSequences.character2.defendVsSpecial;
-    }
-
-    if (animationSequence === 'special-vs-special') {
-      character1.animationSequence = animationSequences.character1.specialVsSpecial;
-      character2.animationSequence = animationSequences.character2.specialVsSpecial;
-    }
+    character1.animationSequence = characterSequences[0];
+    character2.animationSequence = characterSequences[1];
   }
 }
-
