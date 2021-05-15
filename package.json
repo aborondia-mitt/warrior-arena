@@ -15,9 +15,6 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2"
   },
-  "dependencies": {
-    "novicell-sprite-animation": "^1.0.5"
-  },
   "name": "personal-project",
   "description": "---",
   "version": "1.0.0",
