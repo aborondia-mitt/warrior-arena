@@ -17,3 +17,5 @@ Extra:
 
 * Touch up original images and create some new & better looking text/UI/etc.
 * Add new features to make game more interesting \(attack timing maybe?\)
+
+The incomplete version can be found on netlify [here](https://warrior-arena.netlify.app/).
